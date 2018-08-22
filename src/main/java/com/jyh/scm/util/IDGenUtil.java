@@ -10,15 +10,15 @@ import java.util.UUID;
  */
 public class IDGenUtil {
 
+	public static void main(String[] args) {
+		System.out.println(UUID());
+	}
+
 	/**
 	 * @return UUID 去 "-"
 	 */
 	public static String UUID() {
 		String originalUUID = UUID.randomUUID().toString();
 		return originalUUID.replaceAll("-", "");
-	}
-
-	public static void main(String[] args) {
-		System.out.println(UUID());
 	}
 }

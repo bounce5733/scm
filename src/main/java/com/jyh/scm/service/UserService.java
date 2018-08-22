@@ -28,10 +28,8 @@ public class UserService {
 	@Autowired
 	private RoleMapper roleMapper;
 
-	@Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
-	public void remove(String id) {
-		roleMapper.removeRoleUserByUserId(id);
-		userMapper.deleteByPrimaryKey(id);
+	public List<User> load() {
+		return userMapper.selectAll();
 	}
 
 	public List<User> query(String param) {
@@ -40,11 +38,13 @@ public class UserService {
 		return userMapper.selectByCondition(c);
 	}
 
-	public List<User> roleUsers(String roleid) {
-		return userMapper.roleUsers(roleid);
+	@Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+	public void remove(String id) {
+		roleMapper.removeRoleUserByUserId(id);
+		userMapper.deleteByPrimaryKey(id);
 	}
 
-	public List<User> load() {
-		return userMapper.selectAll();
+	public List<User> roleUsers(String roleid) {
+		return userMapper.roleUsers(roleid);
 	}
 }

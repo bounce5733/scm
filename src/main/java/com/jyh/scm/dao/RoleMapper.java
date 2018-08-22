@@ -13,9 +13,9 @@ public interface RoleMapper extends Mapper<Role> {
 
 	void assignUser(@Param("id") String id, @Param("roleid") String roleid, @Param("userid") String userid);
 
-	void clearAssignedUsers(@Param("roleid") String roleid);
-
 	void clearAssignedMenus(@Param("roleid") String roleid);
+
+	void clearAssignedUsers(@Param("roleid") String roleid);
 
 	void removeRoleMenuByMenuId(@Param("menuid") String menuid);
 

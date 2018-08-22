@@ -24,26 +24,13 @@ import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-	// 使用阿里 FastJson 作为JSON MessageConverter
-	@Override
-	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-		FastJsonHttpMessageConverter converter = new FastJsonHttpMessageConverter();
-		FastJsonConfig config = new FastJsonConfig();
-		config.setSerializerFeatures(SerializerFeature.WriteMapNullValue, // 保留空的字段
-				SerializerFeature.WriteNullStringAsEmpty, // String null -> ""
-				SerializerFeature.WriteNullNumberAsZero);// Number null -> 0
-		converter.setFastJsonConfig(config);
-		converter.setDefaultCharset(Charset.forName("UTF-8"));
-		converters.add(converter);
-	}
-
 	// 解决跨域问题
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**").allowedOrigins("*")
 				.allowedMethods("GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "OPTIONS", "PATCH")
-				.allowedHeaders("X-Requested-With", "accept", "content-type", SessionConfig.SESSION_KEY)
-				.exposedHeaders(SessionConfig.SESSION_KEY, SessionConfig.USER_NAME_KEY).allowCredentials(false)
+				.allowedHeaders("X-Requested-With", "accept", "content-type", SessionManager.SESSION_KEY)
+				.exposedHeaders(SessionManager.SESSION_KEY, SessionManager.USER_NAME_KEY).allowCredentials(false)
 				.maxAge(1800);
 	}
 
@@ -59,16 +46,32 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
 				if (!AppConst.AUTH_SKIP_URI.contains(request.getServletPath())
 						&& !request.getMethod().equalsIgnoreCase("OPTIONS")) {
+					String token = request.getHeader("X-Auth-Token");
 					// ==========检查会话==========
-					if (request.getSession(false) == null) {
+					if (token == null || !SessionManager.isValid(token)) {
 						responseResult(response, HttpStatus.UNAUTHORIZED.value());
 						return false;
 					}
+
+					SessionManager.setSessionid(token);
 				}
 
 				return true;
 			}
 		});
+	}
+
+	// 使用阿里 FastJson 作为JSON MessageConverter
+	@Override
+	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+		FastJsonHttpMessageConverter converter = new FastJsonHttpMessageConverter();
+		FastJsonConfig config = new FastJsonConfig();
+		config.setSerializerFeatures(SerializerFeature.WriteMapNullValue, // 保留空的字段
+				SerializerFeature.WriteNullStringAsEmpty, // String null -> ""
+				SerializerFeature.WriteNullNumberAsZero);// Number null -> 0
+		converter.setFastJsonConfig(config);
+		converter.setDefaultCharset(Charset.forName("UTF-8"));
+		converters.add(converter);
 	}
 
 	/**

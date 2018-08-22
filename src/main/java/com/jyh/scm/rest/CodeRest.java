@@ -3,13 +3,9 @@ package com.jyh.scm.rest;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jyh.scm.base.Context;
-import com.jyh.scm.base.SessionConfig;
+import com.jyh.scm.base.CacheManager;
+import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.CodeItemMapper;
 import com.jyh.scm.dao.CodeMapper;
 import com.jyh.scm.entity.Code;
@@ -45,7 +41,7 @@ public class CodeRest {
 	private static final Logger log = LoggerFactory.getLogger(CodeRest.class);
 
 	@Autowired
-	private Context context;
+	private CacheManager cacheManager;
 
 	@Autowired
 	private CodeMapper codeMapper;
@@ -56,70 +52,61 @@ public class CodeRest {
 	@Autowired
 	private CodeService service;
 
-	// @Reference
-	// private AppService appService;
+	@PostMapping
+	public ResponseEntity<Object> addCode(@RequestBody Code code) {
+		code.setCreatedBy(SessionManager.getAccount());
+		code.setCreatedTime(TimeUtil.getTime());
+		codeMapper.insertSelective(code);
+		cacheManager.refreshCode();
+		return new ResponseEntity<Object>(HttpStatus.OK);
+	}
 
-	// @GetMapping("/loadapp")
-	// public ResponseEntity<Map<String, AppEntity>> loadapp() {
-	// return new ResponseEntity<Map<String, AppEntity>>(appService.loadApp(),
-	// HttpStatus.OK);
-	// }
+	@PostMapping("/item")
+	public ResponseEntity<Object> addItem(@RequestBody CodeItem item) {
+		item.setId(IDGenUtil.UUID());
+		item.setCreatedBy(SessionManager.getAccount());
+		item.setCreatedTime(TimeUtil.getTime());
+		codeItemMapper.insertSelective(item);
+		cacheManager.refreshCode();
+		return new ResponseEntity<Object>(HttpStatus.OK);
+	}
+
+	@GetMapping("/cacheMap")
+	public ResponseEntity<Map<String, List<CodeItem>>> cacheMap() {
+		return new ResponseEntity<Map<String, List<CodeItem>>>(cacheManager.loadCode(), HttpStatus.OK);
+	}
+
+	@GetMapping("/cachePathMap")
+	public ResponseEntity<Map<String, Map<String, Object>>> cachePathMap() {
+		return new ResponseEntity<Map<String, Map<String, Object>>>(cacheManager.loadCodePathMap(), HttpStatus.OK);
+	}
+
+	@PatchMapping("/item")
+	public ResponseEntity<Object> editItem(@RequestBody CodeItem item) {
+		item.setUpdatedBy(SessionManager.getAccount());
+		item.setUpdatedTime(TimeUtil.getTime());
+		codeItemMapper.updateByPrimaryKeySelective(item);
+		cacheManager.refreshCode();
+		return new ResponseEntity<Object>(HttpStatus.OK);
+	}
 
 	@GetMapping
 	public ResponseEntity<List<Code>> load() {
 		return new ResponseEntity<List<Code>>(service.codes(), HttpStatus.OK);
 	}
 
-	@GetMapping("/cacheMap")
-	public ResponseEntity<Map<String, List<CodeItem>>> cacheMap() {
-		return new ResponseEntity<Map<String, List<CodeItem>>>(context.loadCodes(), HttpStatus.OK);
-	}
-
-	@GetMapping("/cachePathMap")
-	public ResponseEntity<Map<String, Map<String, Object>>> cachePathMap() {
-		return new ResponseEntity<Map<String, Map<String, Object>>>(context.loadCodePathMap(), HttpStatus.OK);
-	}
-
-	@PostMapping
-	@CacheEvict(value = { "scm_codes", "scm_code_path_map" })
-	public ResponseEntity<Object> addCode(@RequestBody Code code, HttpSession session) {
-		code.setCreatedBy(String.valueOf(session.getAttribute(SessionConfig.USER_ACCOUNT_KEY)));
-		code.setCreatedTime(TimeUtil.getTime());
-		codeMapper.insertSelective(code);
-		return new ResponseEntity<Object>(HttpStatus.OK);
-	}
-
 	@DeleteMapping("/{code}")
-	@CacheEvict(value = { "scm_codes", "scm_code_path_map" })
 	public ResponseEntity<Object> removeCode(@PathVariable String code) {
 		codeMapper.deleteByPrimaryKey(code);
-		return new ResponseEntity<Object>(HttpStatus.OK);
-	}
-
-	@PostMapping("/item")
-	@CacheEvict(value = { "scm_codes", "scm_code_path_map" })
-	public ResponseEntity<Object> addItem(@RequestBody CodeItem item, HttpServletRequest request) {
-		item.setId(IDGenUtil.UUID());
-		item.setCreatedBy(request.getSession().getAttribute(SessionConfig.USER_ACCOUNT_KEY).toString());
-		item.setCreatedTime(TimeUtil.getTime());
-		codeItemMapper.insertSelective(item);
-		return new ResponseEntity<Object>(HttpStatus.OK);
-	}
-
-	@PatchMapping("/item")
-	@CacheEvict(value = { "scm_codes", "scm_code_path_map" })
-	public ResponseEntity<Object> editItem(@RequestBody CodeItem item, HttpServletRequest request) {
-		item.setUpdatedBy(request.getSession().getAttribute(SessionConfig.USER_ACCOUNT_KEY).toString());
-		item.setUpdatedTime(TimeUtil.getTime());
-		codeItemMapper.updateByPrimaryKeySelective(item);
+		cacheManager.refreshCode();
 		return new ResponseEntity<Object>(HttpStatus.OK);
 	}
 
 	@DeleteMapping("/item/{id}")
-	@CacheEvict(value = { "scm_codes", "scm_code_path_map" })
 	public ResponseEntity<Object> removeItem(@PathVariable("id") String id) {
 		try {
 			codeItemMapper.deleteByPrimaryKey(id);
+			cacheManager.refreshCode();
 			return new ResponseEntity<Object>(HttpStatus.OK);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);

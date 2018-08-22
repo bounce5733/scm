@@ -24,21 +24,26 @@ public abstract class BaseDao<T> {
 	@Autowired
 	protected JdbcTemplate template;
 
-	/**
-	 * @param params     参数
-	 * @param orderField 排序字段
-	 * @param order      asc/desc
-	 * @param page       当前页码
-	 * @param rows       每页显示信息数量
-	 */
-	public abstract Map<String, Object> list(Map<String, Object> params, String orderField, String order, int page,
-			int rows);
-
-	public abstract T get(String id);
-
 	public abstract void add(T t);
 
 	public abstract void edit(T t);
+
+	public abstract T get(String id);
+
+	/**
+	 * @param params
+	 *            参数
+	 * @param orderField
+	 *            排序字段
+	 * @param order
+	 *            asc/desc
+	 * @param page
+	 *            当前页码
+	 * @param rows
+	 *            每页显示信息数量
+	 */
+	public abstract Map<String, Object> list(Map<String, Object> params, String orderField, String order, int page,
+			int rows);
 
 	public abstract void remove(String id);
 

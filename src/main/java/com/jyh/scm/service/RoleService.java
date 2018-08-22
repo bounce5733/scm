@@ -20,22 +20,26 @@ import com.jyh.scm.util.IDGenUtil;
  * @date 2018年1月8日 下午4:36:37
  */
 @Service
-public class RoleService{
+public class RoleService {
 
 	@Autowired
 	private RoleMapper roleMapper;
 
-	public List<Role> load() {
-		return roleMapper.selectAll();
-	}
-
-	public void remove(String roleid) {
-		// 清空授权菜单
+	/**
+	 * 授权菜单
+	 * 
+	 * @param roleid
+	 * @param menus
+	 */
+	@Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+	public void assignMenus(String roleid, List<String> menuids) {
+		// 补充父路径
+		Set<String> fullMenuids = this.makeupLackPmenuid(menuids);
+		// 清除菜单授权
 		roleMapper.clearAssignedMenus(roleid);
-		// 清空授权用户
-		roleMapper.clearAssignedUsers(roleid);
-		// 删除权限
-		roleMapper.deleteByPrimaryKey(roleid);
+		fullMenuids.forEach(menuid -> {
+			roleMapper.assignMenu(IDGenUtil.UUID(), roleid, menuid);
+		});
 	}
 
 	/**
@@ -54,19 +58,42 @@ public class RoleService{
 		});
 	}
 
+	public List<Role> load() {
+		return roleMapper.selectAll();
+	}
+
 	/**
-	 * 授权菜单
+	 * 补充父菜单
 	 * 
-	 * @param roleid
-	 * @param menus
+	 * @param menuids
+	 * @return
 	 */
-	@Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
-	public void assignMenus(String roleid, List<String> menuids) {
-		// 清除菜单授权
-		roleMapper.clearAssignedMenus(roleid);
+	private Set<String> makeupLackPmenuid(List<String> menuids) {
+		Set<String> result = new HashSet<String>(menuids);
 		menuids.forEach(menuid -> {
-			roleMapper.assignMenu(IDGenUtil.UUID(), roleid, menuid);
+			String[] menupaths = menuid.split("_");
+			for (int i = 1; i < menupaths.length; i++) {
+				StringBuffer pmenu = new StringBuffer();
+				for (int j = 0; j < i; j++) {
+					pmenu.append(menupaths[j]).append("_");
+				}
+				if (pmenu.length() > 0) {
+					if (!menuids.contains(pmenu.substring(0, pmenu.length() - 1))) {
+						result.add(pmenu.substring(0, pmenu.length() - 1).toString());
+					}
+				}
+			}
 		});
+		return result;
+	}
+
+	public void remove(String roleid) {
+		// 清空授权菜单
+		roleMapper.clearAssignedMenus(roleid);
+		// 清空授权用户
+		roleMapper.clearAssignedUsers(roleid);
+		// 删除权限
+		roleMapper.deleteByPrimaryKey(roleid);
 	}
 
 	/**

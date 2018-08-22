@@ -5,15 +5,13 @@ spring:
     name: plat-console
   profiles:  
     active: dev
-  session:
-    store-type: redis
-  cache:
-    cache-names: cache1
 ---
+session:
+  expiredTime: 5 #分钟
 spring:
   profiles: dev
   datasource:
-    url: jdbc:mysql://192.168.3.9:3306/scm?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&useSSL=false
+    url: jdbc:mysql://localhost:3306/scm?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&useSSL=false
     username: root
     password: passw0rd
     driver-class-name: com.mysql.jdbc.Driver
@@ -42,17 +40,6 @@ spring:
       #打开PSCache，并且指定每个连接上PSCache的大小
       pool-prepared-statements: false
       max-pool-prepared-statement-per-connection-size: 20
-      
-  redis:
-    database: 1
-    host: 192.168.3.9
-    port: 6379
-    letture:
-      pool:
-        max-active: 50
-        max-idle: 10
-        min-idle: 0
-        max-wait: 5000
 
 ---
 spring:

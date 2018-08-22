@@ -18,6 +18,27 @@ public class TimeUtil {
 	public static final String CHN_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
 	/**
+	 * 将日期转换为长整型数字
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public static long date2Num(String date) {
+		return toDate(date, CHN_DATE_FORMAT).getTime();
+	}
+
+	/**
+	 * 将时间转换为长整型数字
+	 * 
+	 * @param time
+	 * @return
+	 */
+	public static long dateTime2Num(String time) {
+		Date date = toDate(time, CHN_DATETIME_FORMAT);
+		return date.getTime();
+	}
+
+	/**
 	 * @return yyyy-MM-dd格式当前日期
 	 */
 	public static String getDate() {
@@ -32,36 +53,35 @@ public class TimeUtil {
 	}
 
 	/**
-	 * 根据时间变量返回时间字符串 yyyy-MM-dd
+	 * 将长整型数字转换为日期
 	 * 
-	 * @param date
+	 * @param time
 	 * @return
 	 */
-	public static String toStr(Date date) {
-		return toStr(date, CHN_DATE_FORMAT);
+	public static String num2Date(long time) {
+
+		if (time > 0L) {
+			SimpleDateFormat sf = new SimpleDateFormat(CHN_DATE_FORMAT);
+			Date date = new Date(time);
+			return sf.format(date);
+		}
+		return "";
 	}
 
 	/**
-	 * 根据时间变量返回时间字符串
+	 * 将长整型数字转换为时间
 	 * 
-	 * @return 返回时间字符串
-	 * @param pattern
-	 *            时间字符串样式
-	 * @param date
-	 *            时间变量
+	 * @param time
+	 * @return
 	 */
-	public static String toStr(Date date, String pattern) {
+	public static String num2DateTime(long time) {
 
-		if (date == null) {
-			return null;
+		if (time > 0L) {
+			SimpleDateFormat sf = new SimpleDateFormat(CHN_DATETIME_FORMAT);
+			Date date = new Date(time);
+			return sf.format(date);
 		}
-		try {
-			SimpleDateFormat sfDate = new SimpleDateFormat(pattern);
-			sfDate.setLenient(false);
-			return sfDate.format(date);
-		} catch (Exception e) {
-			return null;
-		}
+		return "";
 	}
 
 	/**
@@ -95,56 +115,36 @@ public class TimeUtil {
 	}
 
 	/**
-	 * 将长整型数字转换为时间
-	 * 
-	 * @param time
-	 * @return
-	 */
-	public static String num2DateTime(long time) {
-
-		if (time > 0L) {
-			SimpleDateFormat sf = new SimpleDateFormat(CHN_DATETIME_FORMAT);
-			Date date = new Date(time);
-			return sf.format(date);
-		}
-		return "";
-	}
-
-	/**
-	 * 将长整型数字转换为日期
-	 * 
-	 * @param time
-	 * @return
-	 */
-	public static String num2Date(long time) {
-
-		if (time > 0L) {
-			SimpleDateFormat sf = new SimpleDateFormat(CHN_DATE_FORMAT);
-			Date date = new Date(time);
-			return sf.format(date);
-		}
-		return "";
-	}
-
-	/**
-	 * 将时间转换为长整型数字
-	 * 
-	 * @param time
-	 * @return
-	 */
-	public static long dateTime2Num(String time) {
-		Date date = toDate(time, CHN_DATETIME_FORMAT);
-		return date.getTime();
-	}
-
-	/**
-	 * 将日期转换为长整型数字
+	 * 根据时间变量返回时间字符串 yyyy-MM-dd
 	 * 
 	 * @param date
 	 * @return
 	 */
-	public static long date2Num(String date) {
-		return toDate(date, CHN_DATE_FORMAT).getTime();
+	public static String toStr(Date date) {
+		return toStr(date, CHN_DATE_FORMAT);
+	}
+
+	/**
+	 * 根据时间变量返回时间字符串
+	 * 
+	 * @return 返回时间字符串
+	 * @param pattern
+	 *            时间字符串样式
+	 * @param date
+	 *            时间变量
+	 */
+	public static String toStr(Date date, String pattern) {
+
+		if (date == null) {
+			return null;
+		}
+		try {
+			SimpleDateFormat sfDate = new SimpleDateFormat(pattern);
+			sfDate.setLenient(false);
+			return sfDate.format(date);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 }

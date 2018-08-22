@@ -16,6 +16,10 @@ public class Role implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
 	@Id
 	private String id;// UUID主键
 
@@ -33,72 +37,68 @@ public class Role implements Serializable {
 
 	private String updatedTime;// 更新时间
 
-	public String getEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(String enabled) {
-		this.enabled = enabled;
-	}
-
-	public String getUpdatedTime() {
-		return updatedTime;
-	}
-
-	public void setUpdatedTime(String updatedTime) {
-		this.updatedTime = updatedTime;
-	}
-
 	public String getCreatedBy() {
 		return createdBy;
-	}
-
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
 	}
 
 	public String getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(String createdTime) {
-		this.createdTime = createdTime;
+	public String getDescn() {
+		return descn;
+	}
+
+	public String getEnabled() {
+		return enabled;
 	}
 
 	public String getId() {
 		return id;
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public String getName() {
 		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getDescn() {
-		return descn;
-	}
-
-	public void setDescn(String descn) {
-		this.descn = descn;
 	}
 
 	public String getUpdatedBy() {
 		return updatedBy;
 	}
 
+	public String getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public void setCreatedTime(String createdTime) {
+		this.createdTime = createdTime;
+	}
+
+	public void setDescn(String descn) {
+		this.descn = descn;
+	}
+
+	public void setEnabled(String enabled) {
+		this.enabled = enabled;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public void setUpdatedBy(String updatedBy) {
 		this.updatedBy = updatedBy;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	public void setUpdatedTime(String updatedTime) {
+		this.updatedTime = updatedTime;
 	}
 
 	@Override

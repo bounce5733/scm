@@ -1,9 +1,9 @@
 package com.jyh.scm.rest;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jyh.scm.base.SessionConfig;
+import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.UserMapper;
 import com.jyh.scm.entity.User;
-import com.jyh.scm.util.CodeUtil;
+import com.jyh.scm.util.IDGenUtil;
 
 /**
  * 系统API
@@ -33,20 +33,23 @@ public class SysRest {
 	private UserMapper userMapper;
 
 	@PostMapping("/login")
-	public ResponseEntity<String> login(@RequestBody Map<String, String> userMap, HttpSession session) {
+	public ResponseEntity<String> login(@RequestBody Map<String, String> userMap) {
 		// 验证用户
 		User param = new User();
 		param.setAccount(userMap.get("account"));
 		User user = userMapper.selectOne(param);
-		if (user == null || !CodeUtil.md5Encode(userMap.get("pwd").trim()).equals(user.getPwd())) {
+		if (user == null || !userMap.get("pwd").equals(user.getPwd())) {
 			return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
 		}
 
-		session.setAttribute(SessionConfig.USER_ID_KEY, user.getId());
-		session.setAttribute(SessionConfig.USER_NAME_KEY, user.getName());
-		session.setAttribute(SessionConfig.USER_ACCOUNT_KEY, user.getAccount());
-		
-		return new ResponseEntity<String>(session.getId(), HttpStatus.OK);
+		Map<String, String> userinfo = new HashMap<String, String>();
+		userinfo.put(SessionManager.USER_ID_KEY, user.getId());
+		userinfo.put(SessionManager.USER_NAME_KEY, user.getName());
+		userinfo.put(SessionManager.USER_ACCOUNT_KEY, user.getAccount());
+
+		String sessionid = IDGenUtil.UUID();
+		SessionManager.put(sessionid, userinfo);
+		return new ResponseEntity<String>(sessionid, HttpStatus.OK);
 	}
 
 	@GetMapping("/logout")

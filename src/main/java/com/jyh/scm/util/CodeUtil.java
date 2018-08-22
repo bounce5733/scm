@@ -14,31 +14,17 @@ import org.apache.commons.codec.digest.DigestUtils;
 public class CodeUtil {
 
 	/**
-	 * MD5编码
+	 * Base64解码
 	 * 
-	 * @param msg
-	 *            待编码字符
-	 * @return 字符摘要
-	 */
-	public static String md5Encode(String msg) {
-		if (Objects.isNull(msg)) {
-			return null;
-		}
-		return DigestUtils.md5Hex(msg);
-	}
-
-	/**
-	 * Base64编码
-	 * 
-	 * @param plainMsg
-	 *            字符串
+	 * @param encodeMsg
+	 *            编码base64字符
 	 * @return
 	 */
-	public static String base64Encode(String plainMsg) {
-		if (Objects.isNull(plainMsg)) {
+	public static String base64Decode(String encodeMsg) {
+		if (Objects.isNull(encodeMsg)) {
 			return null;
 		}
-		return new String(new Base64().encode(plainMsg.getBytes()));
+		return new String(new Base64().decode(encodeMsg.getBytes()));
 	}
 
 	/**
@@ -56,17 +42,17 @@ public class CodeUtil {
 	}
 
 	/**
-	 * Base64解码
+	 * Base64编码
 	 * 
-	 * @param encodeMsg
-	 *            编码base64字符
+	 * @param plainMsg
+	 *            字符串
 	 * @return
 	 */
-	public static String base64Decode(String encodeMsg) {
-		if (Objects.isNull(encodeMsg)) {
+	public static String base64Encode(String plainMsg) {
+		if (Objects.isNull(plainMsg)) {
 			return null;
 		}
-		return new String(new Base64().decode(encodeMsg.getBytes()));
+		return new String(new Base64().encode(plainMsg.getBytes()));
 	}
 
 	/**
@@ -86,5 +72,19 @@ public class CodeUtil {
 	public static void main(String[] args) {
 		String msg = "123";
 		System.out.println(md5Encode(msg));
+	}
+
+	/**
+	 * MD5编码
+	 * 
+	 * @param msg
+	 *            待编码字符
+	 * @return 字符摘要
+	 */
+	public static String md5Encode(String msg) {
+		if (Objects.isNull(msg)) {
+			return null;
+		}
+		return DigestUtils.md5Hex(msg);
 	}
 }

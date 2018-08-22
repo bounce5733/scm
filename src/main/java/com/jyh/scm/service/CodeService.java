@@ -19,6 +19,26 @@ import com.jyh.scm.entity.CodeItem;
 @Service
 public class CodeService {
 
+	/**
+	 * 递归收集编码项目
+	 * 
+	 * @param pItems
+	 *            编码父项目列表
+	 * @param codeTtems
+	 *            编码项目列表
+	 */
+	private static void makeCodeItems(List<CodeItem> items, List<CodeItem> pItems, List<CodeItem> codeTtems) {
+		for (CodeItem pItem : pItems) {
+			items.add(pItem);
+			// 收集下级子项目
+			List<CodeItem> child = codeTtems.stream().filter(item -> item.getPid().equals(pItem.getId())).sorted()
+					.collect(Collectors.toList());
+			if (child.size() > 0) {
+				makeCodeItems(items, child, codeTtems);
+			}
+		}
+	}
+
 	@Autowired
 	private CodeItemMapper codeItemMapper;
 
@@ -40,26 +60,6 @@ public class CodeService {
 			code.setItems(itemList);
 		}
 		return codes;
-	}
-
-	/**
-	 * 递归收集编码项目
-	 * 
-	 * @param pItems
-	 *            编码父项目列表
-	 * @param codeTtems
-	 *            编码项目列表
-	 */
-	private static void makeCodeItems(List<CodeItem> items, List<CodeItem> pItems, List<CodeItem> codeTtems) {
-		for (CodeItem pItem : pItems) {
-			items.add(pItem);
-			// 收集下级子项目
-			List<CodeItem> child = codeTtems.stream().filter(item -> item.getPid().equals(pItem.getId())).sorted()
-					.collect(Collectors.toList());
-			if (child.size() > 0) {
-				makeCodeItems(items, child, codeTtems);
-			}
-		}
 	}
 
 }

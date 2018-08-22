@@ -8,11 +8,11 @@ import java.util.List;
  * @date 2018年3月5日 下午5:23:22
  */
 public class AppConst {
-	
+
 	public static final String ENCODING = "UTF-8";
 
 	public static final String APPID = "scm";
-	
+
 	public static final String SYS_DEFAULT_PWD = "e10adc3949ba59abbe56e057f20f883e";
 
 	public static final String BASE_PACKAGE = "com.jyh.scm";// 项目基础包名称，根据自己公司的项目修改

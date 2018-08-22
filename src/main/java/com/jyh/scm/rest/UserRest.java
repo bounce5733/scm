@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -22,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jyh.scm.base.AppConst;
-import com.jyh.scm.base.SessionConfig;
+import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.UserMapper;
 import com.jyh.scm.entity.User;
 import com.jyh.scm.service.RoleService;
@@ -49,31 +47,10 @@ public class UserRest {
 	@Autowired
 	private RoleService roleService;
 
-	@GetMapping
-	public ResponseEntity<List<User>> load() {
-		return new ResponseEntity<List<User>>(userService.load(), HttpStatus.OK);
-	}
-
-	@GetMapping("/userinfo")
-	public ResponseEntity<Map<String, Object>> userinfo(HttpSession session) {
-		Map<String, Object> userinfo = new HashMap<String, Object>();
-		String userid = String.valueOf(session.getAttribute(SessionConfig.USER_ID_KEY));
-		User user = userMapper.selectByPrimaryKey(userid);
-		Set<String> menuids = roleService.userMenus(userid);
-		userinfo.put("user", user);
-		userinfo.put("menuids", menuids);
-		return new ResponseEntity<Map<String, Object>>(userinfo, HttpStatus.OK);
-	}
-
-	@GetMapping("/{id}")
-	public ResponseEntity<User> get(@PathVariable("id") String id) {
-		return new ResponseEntity<User>(userMapper.selectByPrimaryKey(id), HttpStatus.OK);
-	}
-
 	@PostMapping
-	public ResponseEntity<Object> add(@RequestBody User user, HttpSession session) {
+	public ResponseEntity<Object> add(@RequestBody User user) {
 		user.setId(IDGenUtil.UUID());
-		user.setCreatedBy(String.valueOf(session.getAttribute(SessionConfig.USER_ACCOUNT_KEY)));
+		user.setCreatedBy(SessionManager.getAccount());
 		user.setCreatedTime(TimeUtil.getTime());
 		user.setPwd(AppConst.SYS_DEFAULT_PWD);
 		userMapper.insertSelective(user);
@@ -81,11 +58,26 @@ public class UserRest {
 	}
 
 	@PatchMapping
-	public ResponseEntity<Object> edit(@RequestBody User user, HttpSession session) {
-		user.setUpdatedBy(String.valueOf(session.getAttribute(SessionConfig.USER_ACCOUNT_KEY)));
+	public ResponseEntity<Object> edit(@RequestBody User user) {
+		user.setUpdatedBy(SessionManager.getAccount());
 		user.setUpdatedTime(TimeUtil.getTime());
 		userMapper.updateByPrimaryKeySelective(user);
 		return new ResponseEntity<Object>(HttpStatus.OK);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<User> get(@PathVariable("id") String id) {
+		return new ResponseEntity<User>(userMapper.selectByPrimaryKey(id), HttpStatus.OK);
+	}
+
+	@GetMapping
+	public ResponseEntity<List<User>> load() {
+		return new ResponseEntity<List<User>>(userService.load(), HttpStatus.OK);
+	}
+
+	@GetMapping("/matchWithAccountOrName")
+	public ResponseEntity<List<User>> query(@RequestParam("param") String param) {
+		return new ResponseEntity<List<User>>(userService.query(param), HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{id}")
@@ -98,13 +90,18 @@ public class UserRest {
 		}
 	}
 
-	@GetMapping("/matchWithAccountOrName")
-	public ResponseEntity<List<User>> query(@RequestParam("param") String param) {
-		return new ResponseEntity<List<User>>(userService.query(param), HttpStatus.OK);
-	}
-
 	@GetMapping("/role/{roleid}")
 	public ResponseEntity<List<User>> roleUsers(@PathVariable("roleid") String roleid) {
 		return new ResponseEntity<List<User>>(userService.roleUsers(roleid), HttpStatus.OK);
+	}
+
+	@GetMapping("/userinfo")
+	public ResponseEntity<Map<String, Object>> userinfo() {
+		Map<String, Object> userinfo = new HashMap<String, Object>();
+		User user = userMapper.selectByPrimaryKey(SessionManager.getUserid());
+		Set<String> menuids = roleService.userMenus(SessionManager.getUserid());
+		userinfo.put("user", user);
+		userinfo.put("menuids", menuids);
+		return new ResponseEntity<Map<String, Object>>(userinfo, HttpStatus.OK);
 	}
 }

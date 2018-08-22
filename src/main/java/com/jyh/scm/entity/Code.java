@@ -18,6 +18,10 @@ public class Code {
 
 	private static final long serialVersionUID = 1L;
 
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
 	@Id
 	private String code;
 
@@ -34,44 +38,40 @@ public class Code {
 		return code;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getCreatedBy() {
 		return createdBy;
-	}
-
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
 	}
 
 	public String getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(String createdTime) {
-		this.createdTime = createdTime;
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
 	public List<CodeItem> getItems() {
 		return items;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public void setCreatedTime(String createdTime) {
+		this.createdTime = createdTime;
+	}
+
 	public void setItems(List<CodeItem> items) {
 		this.items = items;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override

@@ -3,8 +3,6 @@ package com.jyh.scm.rest;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -18,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jyh.scm.base.SessionConfig;
+import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.RoleMapper;
 import com.jyh.scm.entity.Role;
 import com.jyh.scm.service.RoleService;
@@ -41,37 +39,27 @@ public class RoleRest {
 	@Autowired
 	private RoleService service;
 
-	@GetMapping
-	public ResponseEntity<List<Role>> load() {
-		return new ResponseEntity<List<Role>>(roleMapper.selectAll(), HttpStatus.OK);
-	}
-
 	@PostMapping
-	public ResponseEntity<Object> add(@RequestBody Role role, HttpSession session) {
+	public ResponseEntity<Object> add(@RequestBody Role role) {
 		role.setId(IDGenUtil.UUID());
-		role.setCreatedBy(String.valueOf(session.getAttribute(SessionConfig.USER_ACCOUNT_KEY)));
+		role.setCreatedBy(SessionManager.getAccount());
 		role.setCreatedTime(TimeUtil.getTime());
 		roleMapper.insertSelective(role);
 		return new ResponseEntity<Object>(HttpStatus.OK);
 	}
 
-	@PatchMapping
-	public ResponseEntity<Object> edit(@RequestBody Role role, HttpSession session) {
-		role.setUpdatedBy(String.valueOf(session.getAttribute(SessionConfig.USER_ACCOUNT_KEY)));
-		role.setUpdatedTime(TimeUtil.getTime());
-
-		roleMapper.updateByPrimaryKeySelective(role);
+	/**
+	 * 分配菜单给角色
+	 * 
+	 * @param roleid
+	 * @param menuids
+	 * @return
+	 */
+	@PostMapping("/{roleid}/assign/menus")
+	public ResponseEntity<Object> assignMenus(@PathVariable("roleid") String roleid,
+			@RequestBody List<String> menuids) {
+		service.assignMenus(roleid, menuids);
 		return new ResponseEntity<Object>(HttpStatus.OK);
-	}
-
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Object> remove(@PathVariable("id") String id) {
-		try {
-			service.remove(id);
-			return new ResponseEntity<Object>(HttpStatus.OK);
-		} catch (DataIntegrityViolationException e) {
-			return new ResponseEntity<Object>(HttpStatus.LOCKED);
-		}
 	}
 
 	/**
@@ -88,18 +76,28 @@ public class RoleRest {
 		return new ResponseEntity<Object>(HttpStatus.OK);
 	}
 
-	/**
-	 * 分配菜单给角色
-	 * 
-	 * @param roleid
-	 * @param menuids
-	 * @return
-	 */
-	@PostMapping("/{roleid}/assign/menus")
-	public ResponseEntity<Object> assignMenus(@PathVariable("roleid") String roleid,
-			@RequestBody List<String> menuids) {
-		service.assignMenus(roleid, menuids);
+	@PatchMapping
+	public ResponseEntity<Object> edit(@RequestBody Role role) {
+		role.setUpdatedBy(SessionManager.getAccount());
+		role.setUpdatedTime(TimeUtil.getTime());
+
+		roleMapper.updateByPrimaryKeySelective(role);
 		return new ResponseEntity<Object>(HttpStatus.OK);
+	}
+
+	@GetMapping
+	public ResponseEntity<List<Role>> load() {
+		return new ResponseEntity<List<Role>>(roleMapper.selectAll(), HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Object> remove(@PathVariable("id") String id) {
+		try {
+			service.remove(id);
+			return new ResponseEntity<Object>(HttpStatus.OK);
+		} catch (DataIntegrityViolationException e) {
+			return new ResponseEntity<Object>(HttpStatus.LOCKED);
+		}
 	}
 
 	/**
