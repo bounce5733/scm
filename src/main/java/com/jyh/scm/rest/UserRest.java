@@ -99,9 +99,9 @@ public class UserRest {
 	public ResponseEntity<Map<String, Object>> userinfo() {
 		Map<String, Object> userinfo = new HashMap<String, Object>();
 		User user = userMapper.selectByPrimaryKey(SessionManager.getUserid());
-		Set<String> menuids = roleService.userMenus(SessionManager.getUserid());
+		Map<String, List<String>> menus = roleService.userMenus(SessionManager.getUserid());
 		userinfo.put("user", user);
-		userinfo.put("menuids", menuids);
+		userinfo.put("menus", menus);
 		return new ResponseEntity<Map<String, Object>>(userinfo, HttpStatus.OK);
 	}
 }

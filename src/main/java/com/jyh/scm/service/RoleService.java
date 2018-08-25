@@ -1,8 +1,9 @@
 package com.jyh.scm.service;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,17 +30,24 @@ public class RoleService {
 	 * 授权菜单
 	 * 
 	 * @param roleid
-	 * @param menus
+	 * @param actionmap
+	 * @param menuids
 	 */
 	@Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
-	public void assignMenus(String roleid, List<String> menuids) {
-		// 补充父路径
-		Set<String> fullMenuids = this.makeupLackPmenuid(menuids);
+	public void assignMenus(String roleid, Map<String, List<String>> actionmap) {
 		// 清除菜单授权
 		roleMapper.clearAssignedMenus(roleid);
-		fullMenuids.forEach(menuid -> {
-			roleMapper.assignMenu(IDGenUtil.UUID(), roleid, menuid);
-		});
+		// 分配菜单
+		for (String menuid : actionmap.keySet()) {
+			if (actionmap.get(menuid).size() > 0) {
+				actionmap.get(menuid).forEach(actionkey -> {
+					roleMapper.assignMenu(IDGenUtil.UUID(), roleid, menuid, actionkey);
+				});
+			} else {
+				roleMapper.assignMenu(IDGenUtil.UUID(), roleid, menuid, "");
+			}
+
+		}
 	}
 
 	/**
@@ -62,31 +70,6 @@ public class RoleService {
 		return roleMapper.selectAll();
 	}
 
-	/**
-	 * 补充父菜单
-	 * 
-	 * @param menuids
-	 * @return
-	 */
-	private Set<String> makeupLackPmenuid(List<String> menuids) {
-		Set<String> result = new HashSet<String>(menuids);
-		menuids.forEach(menuid -> {
-			String[] menupaths = menuid.split("_");
-			for (int i = 1; i < menupaths.length; i++) {
-				StringBuffer pmenu = new StringBuffer();
-				for (int j = 0; j < i; j++) {
-					pmenu.append(menupaths[j]).append("_");
-				}
-				if (pmenu.length() > 0) {
-					if (!menuids.contains(pmenu.substring(0, pmenu.length() - 1))) {
-						result.add(pmenu.substring(0, pmenu.length() - 1).toString());
-					}
-				}
-			}
-		});
-		return result;
-	}
-
 	public void remove(String roleid) {
 		// 清空授权菜单
 		roleMapper.clearAssignedMenus(roleid);
@@ -102,11 +85,17 @@ public class RoleService {
 	 * @param userid
 	 * @return
 	 */
-	public Set<String> userMenus(String userid) {
-		List<String> menuids = roleMapper.userMenus(userid);
+	public Map<String, List<String>> userMenus(String userid) {
+		List<Map<String, String>> points = roleMapper.userMenus(userid);
 		// 去除重复
-		Set<String> uniqueMenuids = new HashSet<String>();
-		uniqueMenuids.addAll(menuids);
-		return uniqueMenuids;
+		Map<String, List<String>> menus = new HashMap<String, List<String>>();
+		points.forEach(point -> {
+			String menuId = point.get("menuId");
+			if (menus.get(menuId) == null) {
+				menus.put(menuId, new ArrayList<String>());
+			}
+			menus.get(menuId).add(point.get("actionKey"));
+		});
+		return menus;
 	}
 }

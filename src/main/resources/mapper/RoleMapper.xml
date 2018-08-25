@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jyh.scm.dao.RoleMapper">
-
+	
 	<insert id="assignMenu">
-		INSERT INTO sys_role_menu (id,role_id,menu_id) VALUES
-		(#{id},#{roleid},#{menuid})
+		INSERT INTO sys_role_menu (id,role_id,menu_id,action_key) VALUES
+		(#{id},#{roleid},#{menuid},#{actionkey})
 	</insert>
 
 	<insert id="assignUser">
@@ -19,6 +19,7 @@
 	<delete id="clearAssignedMenus">
 		DELETE FROM sys_role_menu WHERE role_id = #{roleid}
 	</delete>
+	
 
 	<delete id="removeRoleMenuByMenuId">
 		DELETE FROM sys_role_menu WHERE menu_id = #{menuid}
@@ -28,13 +29,13 @@
 		DELETE FROM sys_role_user WHERE user_id = #{userid}
 	</delete>
 
-	<select id="roleMenus" resultType="java.lang.String">
-		SELECT menu_id AS menuId FROM
+	<select id="roleMenus" resultType="java.util.HashMap">
+		SELECT menu_id AS menuId,action_key AS actionKey FROM
 		sys_role_menu WHERE role_id = #{roleid}
 	</select>
 
-	<select id="userMenus" resultType="java.lang.String">
-		SELECT rm.menu_id AS menuId FROM
+	<select id="userMenus" resultType="java.util.HashMap">
+		SELECT rm.menu_id AS menuId,rm.action_key AS actionKey FROM
 		sys_role_user ru LEFT JOIN sys_role_menu rm ON ru.role_id = rm.role_id
 		WHERE user_id = #{userid}
 	</select>

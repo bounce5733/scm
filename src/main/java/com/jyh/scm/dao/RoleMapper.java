@@ -1,6 +1,7 @@
 package com.jyh.scm.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -9,7 +10,8 @@ import com.jyh.scm.entity.Role;
 
 public interface RoleMapper extends Mapper<Role> {
 
-	void assignMenu(@Param("id") String id, @Param("roleid") String roleid, @Param("menuid") String menuid);
+	void assignMenu(@Param("id") String id, @Param("roleid") String roleid, @Param("menuid") String menuid,
+			@Param("actionkey") String actionkey);
 
 	void assignUser(@Param("id") String id, @Param("roleid") String roleid, @Param("userid") String userid);
 
@@ -21,7 +23,7 @@ public interface RoleMapper extends Mapper<Role> {
 
 	void removeRoleUserByUserId(@Param("userid") String userid);
 
-	List<String> roleMenus(@Param("roleid") String roleid);
+	List<Map<String,String>> roleMenus(@Param("roleid") String roleid);
 
-	List<String> userMenus(@Param("userid") String userid);
+	List<Map<String,String>> userMenus(@Param("userid") String userid);
 }

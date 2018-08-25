@@ -7,7 +7,7 @@ spring:
     active: dev
 ---
 session:
-  expiredTime: 5 #分钟
+  expiredTime: 30 #分钟
 spring:
   profiles: dev
   datasource:

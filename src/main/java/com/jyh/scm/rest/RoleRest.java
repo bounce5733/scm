@@ -1,7 +1,7 @@
 package com.jyh.scm.rest;
 
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -57,8 +57,9 @@ public class RoleRest {
 	 */
 	@PostMapping("/{roleid}/assign/menus")
 	public ResponseEntity<Object> assignMenus(@PathVariable("roleid") String roleid,
-			@RequestBody List<String> menuids) {
-		service.assignMenus(roleid, menuids);
+			@RequestBody Map<String, List<String>> actionmap) {
+
+		service.assignMenus(roleid, actionmap);
 		return new ResponseEntity<Object>(HttpStatus.OK);
 	}
 
@@ -107,8 +108,8 @@ public class RoleRest {
 	 * @return
 	 */
 	@GetMapping("/menus/{roleid}")
-	public ResponseEntity<List<String>> roleMenus(@PathVariable("roleid") String roleid) {
-		return new ResponseEntity<List<String>>(roleMapper.roleMenus(roleid), HttpStatus.OK);
+	public ResponseEntity<List<Map<String, String>>> roleMenus(@PathVariable("roleid") String roleid) {
+		return new ResponseEntity<List<Map<String, String>>>(roleMapper.roleMenus(roleid), HttpStatus.OK);
 	}
 
 	/**
@@ -118,8 +119,8 @@ public class RoleRest {
 	 * @return
 	 */
 	@GetMapping("/usermenus/{userid}")
-	public ResponseEntity<Set<String>> userMenus(@PathVariable("userid") String userid) {
-		return new ResponseEntity<Set<String>>(service.userMenus(userid), HttpStatus.OK);
+	public ResponseEntity<Map<String, List<String>>> userMenus(@PathVariable("userid") String userid) {
+		return new ResponseEntity<Map<String, List<String>>>(service.userMenus(userid), HttpStatus.OK);
 	}
 
 }
