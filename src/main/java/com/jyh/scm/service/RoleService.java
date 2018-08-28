@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -94,7 +95,9 @@ public class RoleService {
 			if (menus.get(menuId) == null) {
 				menus.put(menuId, new ArrayList<String>());
 			}
-			menus.get(menuId).add(point.get("actionKey"));
+			if (StringUtils.isNotBlank(point.get("actionKey"))) {
+				menus.get(menuId).add(point.get("actionKey"));
+			}
 		});
 		return menus;
 	}

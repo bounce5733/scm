@@ -6,6 +6,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -14,15 +17,25 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.jyh.scm.dao.OptLogMapper;
+import com.jyh.scm.entity.OptLog;
+import com.jyh.scm.util.IDGenUtil;
+import com.jyh.scm.util.TimeUtil;
 
 /**
  * Spring MVC 配置
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
+
+	private static final Logger log = LoggerFactory.getLogger(WebMvcConfig.class);
+
+	@Autowired
+	private OptLogMapper optLogMapper;
 
 	// 解决跨域问题
 	@Override
@@ -44,16 +57,31 @@ public class WebMvcConfig implements WebMvcConfigurer {
 				request.setCharacterEncoding(AppConst.ENCODING);
 				response.setCharacterEncoding(AppConst.ENCODING);
 
+				// 验证权限
 				if (!AppConst.AUTH_SKIP_URI.contains(request.getServletPath())
 						&& !request.getMethod().equalsIgnoreCase("OPTIONS")) {
 					String token = request.getHeader("X-Auth-Token");
-					// ==========检查会话==========
 					if (token == null || !SessionManager.isValid(token)) {
 						responseResult(response, HttpStatus.UNAUTHORIZED.value());
 						return false;
 					}
 
 					SessionManager.setSessionid(token);
+
+					// 记录日志
+					String method = request.getMethod();
+					String url = request.getServletPath();
+					String action = method.toLowerCase() + "_" + url.substring(1);
+					if (CacheManager.loadActionMap().get(action) != null) {
+						OptLog optlog = new OptLog();
+						optlog.setId(IDGenUtil.UUID());
+						optlog.setUserName(SessionManager.getUsername());
+						optlog.setOptType(CacheManager.loadActionMap().get(action));
+						optlog.setCreatedBy(SessionManager.getAccount());
+						optlog.setCreatedTime(TimeUtil.getTime());
+
+						optLogMapper.insert(optlog);
+					}
 				}
 
 				return true;

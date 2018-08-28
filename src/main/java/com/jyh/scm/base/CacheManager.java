@@ -36,6 +36,9 @@ public class CacheManager {
 	// 码表缓存{id:{path:'',name:''}}
 	private static LoadingCache<String, Map<String, Object>> pathMapCodeCache;
 
+	// 系统功能名称映射，如：{post_users:新增用户}
+	private static LoadingCache<String, String> actionCache;
+
 	@Autowired
 	private CodeMapper codeMapper;
 
@@ -54,6 +57,12 @@ public class CacheManager {
 			@Override
 			public Map<String, Object> load(String key) throws Exception {
 				return new HashMap<String, Object>();
+			}
+		});
+		actionCache = CacheBuilder.newBuilder().build(new CacheLoader<String, String>() {
+			@Override
+			public String load(String key) throws Exception {
+				return new String();
 			}
 		});
 	}
@@ -129,6 +138,25 @@ public class CacheManager {
 		}
 		return cacheCodePathMap;
 
+	}
+
+	/**
+	 * 系统功能名称映射
+	 * 
+	 * @return 如：{post_users:新增用户}
+	 */
+	public static void cacheAction(Map<String, String> actions) {
+		ConcurrentMap<String, String> actionCacheMap = actionCache.asMap();
+		actions.forEach((key, val) -> {
+			actionCacheMap.put(key, val);
+		});
+	}
+
+	/**
+	 * @return 系统功能map,如：{post_users:新增用户}
+	 */
+	public static Map<String, String> loadActionMap() {
+		return actionCache.asMap();
 	}
 
 	/**

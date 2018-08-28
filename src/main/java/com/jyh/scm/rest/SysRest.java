@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jyh.scm.base.CacheManager;
 import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.UserMapper;
 import com.jyh.scm.entity.User;
@@ -33,13 +34,13 @@ public class SysRest {
 	private UserMapper userMapper;
 
 	@PostMapping("/login")
-	public ResponseEntity<String> login(@RequestBody Map<String, String> userMap) {
+	public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> userMap) {
 		// 验证用户
 		User param = new User();
 		param.setAccount(userMap.get("account"));
 		User user = userMapper.selectOne(param);
 		if (user == null || !userMap.get("pwd").equals(user.getPwd())) {
-			return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<Map<String, Object>>(HttpStatus.NO_CONTENT);
 		}
 
 		Map<String, String> userinfo = new HashMap<String, String>();
@@ -49,7 +50,21 @@ public class SysRest {
 
 		String sessionid = IDGenUtil.UUID();
 		SessionManager.put(sessionid, userinfo);
-		return new ResponseEntity<String>(sessionid, HttpStatus.OK);
+
+		Map<String, Object> rtnmsg = new HashMap<String, Object>();
+		boolean needCacheAction = false;
+		if (CacheManager.loadActionMap().size() == 0) {
+			needCacheAction = true;
+		}
+		rtnmsg.put("sessionid", sessionid);
+		rtnmsg.put("needCacheAction", needCacheAction);
+		return new ResponseEntity<Map<String, Object>>(rtnmsg, HttpStatus.OK);
+	}
+
+	@PostMapping("/action")
+	public ResponseEntity<Object> cacheAction(@RequestBody Map<String, String> actions) {
+		CacheManager.cacheAction(actions);
+		return new ResponseEntity<Object>(HttpStatus.OK);
 	}
 
 	@GetMapping("/logout")

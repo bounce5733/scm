@@ -36,7 +36,8 @@
 		<append>true</append>
 		<!-- 日志文件的格式 -->
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger Line:%-3L - %msg%n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger Line:%-3L -
+				%msg%n</pattern>
 			<charset>utf-8</charset>
 		</encoder>
 		<!-- 此日志文件只记录error级别的 -->
@@ -71,7 +72,8 @@
 		<append>true</append>
 		<!-- 日志文件的格式 -->
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger Line:%-3L - %msg%n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger Line:%-3L -
+				%msg%n</pattern>
 			<charset>utf-8</charset>
 		</encoder>
 		<!-- 此日志文件只记录info级别的 -->
@@ -106,7 +108,8 @@
 		<append>true</append>
 		<!-- 日志文件的格式 -->
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger Line:%-3L - %msg%n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger Line:%-3L -
+				%msg%n</pattern>
 			<charset>utf-8</charset>
 		</encoder>
 		<!-- 此日志文件只记录info级别的 -->
@@ -117,11 +120,24 @@
 		</filter>
 	</appender>
 
+	<appender name="DB" class="ch.qos.logback.classic.db.DBAppender">
+		<connectionSource class="ch.qos.logback.core.db.DataSourceConnectionSource">
+			<dataSource class="com.alibaba.druid.pool.DruidDataSource">
+				<driverClass>com.mysql.jdbc.Driver</driverClass>
+				<url>jdbc:mysql://localhost:3306/scm</url>
+				<param name="useSSL" value="false"/>
+				<user>root</user>
+				<password>passw0rd</password>
+			</dataSource>
+		</connectionSource>
+	</appender>
+
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<!--encoder 默认配置为PatternLayoutEncoder -->
 		<!-- 日志文件的格式 -->
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger Line:%-3L - %msg%n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger Line:%-3L -
+				%msg%n</pattern>
 			<charset>utf-8</charset>
 		</encoder>
 		<!--此日志appender是为开发使用，只配置最底级别，控制台输出的日志级别是大于或等于此级别的日志信息 -->
@@ -134,11 +150,11 @@
 
 	<!-- 生产环境下，将此级别配置为适合的级别，以免日志文件太多或影响程序性能 -->
 	<root level="INFO">
-		<!-- <appender-ref ref="FILEERROR" />
-		<appender-ref ref="FILEWARN" />
-		<appender-ref ref="FILEINFO" /> -->
+		<!-- <appender-ref ref="FILEERROR" /> <appender-ref ref="FILEWARN" /> <appender-ref 
+			ref="FILEINFO" /> -->
 
 		<!-- 生产环境将请stdout去掉 -->
 		<appender-ref ref="STDOUT" />
+		<appender-ref ref="DB" />
 	</root>
 </configuration>
