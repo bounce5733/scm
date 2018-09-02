@@ -40,7 +40,7 @@ public class RoleRest {
 	private RoleService service;
 
 	@PostMapping
-	public ResponseEntity<Object> add(@RequestBody Role role) {
+	public ResponseEntity<Object> addRole(@RequestBody Role role) {
 		role.setId(IDGenUtil.UUID());
 		role.setCreatedBy(SessionManager.getAccount());
 		role.setCreatedTime(TimeUtil.getTime());
@@ -78,7 +78,7 @@ public class RoleRest {
 	}
 
 	@PatchMapping
-	public ResponseEntity<Object> edit(@RequestBody Role role) {
+	public ResponseEntity<Object> editRole(@RequestBody Role role) {
 		role.setUpdatedBy(SessionManager.getAccount());
 		role.setUpdatedTime(TimeUtil.getTime());
 
@@ -87,12 +87,12 @@ public class RoleRest {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<Role>> load() {
+	public ResponseEntity<List<Role>> loadRole() {
 		return new ResponseEntity<List<Role>>(roleMapper.selectAll(), HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Object> remove(@PathVariable("id") String id) {
+	public ResponseEntity<Object> removeRole(@PathVariable("id") String id) {
 		try {
 			service.remove(id);
 			return new ResponseEntity<Object>(HttpStatus.OK);

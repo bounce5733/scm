@@ -47,7 +47,7 @@ public class UserRest {
 	private RoleService roleService;
 
 	@PostMapping
-	public ResponseEntity<Object> add(@RequestBody User user) {
+	public ResponseEntity<Object> addUser(@RequestBody User user) {
 		user.setId(IDGenUtil.UUID());
 		user.setCreatedBy(SessionManager.getAccount());
 		user.setCreatedTime(TimeUtil.getTime());
@@ -57,7 +57,7 @@ public class UserRest {
 	}
 
 	@PatchMapping
-	public ResponseEntity<Object> edit(@RequestBody User user) {
+	public ResponseEntity<Object> editUser(@RequestBody User user) {
 		user.setUpdatedBy(SessionManager.getAccount());
 		user.setUpdatedTime(TimeUtil.getTime());
 		userMapper.updateByPrimaryKeySelective(user);
@@ -65,22 +65,22 @@ public class UserRest {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<User> get(@PathVariable("id") String id) {
+	public ResponseEntity<User> getUser(@PathVariable("id") String id) {
 		return new ResponseEntity<User>(userMapper.selectByPrimaryKey(id), HttpStatus.OK);
 	}
 
 	@GetMapping
-	public ResponseEntity<List<User>> load() {
+	public ResponseEntity<List<User>> loadUser() {
 		return new ResponseEntity<List<User>>(userService.load(), HttpStatus.OK);
 	}
 
 	@GetMapping("/matchWithAccountOrName")
-	public ResponseEntity<List<User>> query(@RequestParam("param") String param) {
+	public ResponseEntity<List<User>> queryUser(@RequestParam("param") String param) {
 		return new ResponseEntity<List<User>>(userService.query(param), HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Object> remove(@PathVariable("id") String id) {
+	public ResponseEntity<Object> removeUser(@PathVariable("id") String id) {
 		try {
 			userService.remove(id);
 			return new ResponseEntity<Object>(HttpStatus.OK);
