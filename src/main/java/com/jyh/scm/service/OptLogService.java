@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.github.pagehelper.ISelect;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.OptLogMapper;
 import com.jyh.scm.entity.OptLog;
 import com.jyh.scm.util.StringUtil;
@@ -28,6 +29,12 @@ public class OptLogService {
     /**
      * @param optType
      *            操作类型
+     * @param isme
+     *            操作人是否是本人 true|是 false|全部
+     * @param startTime
+     *            开始时间
+     * @param endTime
+     *            结束时间
      * @param orderField
      *            排序字段
      * @param order
@@ -36,7 +43,8 @@ public class OptLogService {
      * @param pageSize
      * @return
      */
-    public PageInfo<OptLog> queryByPage(String optType, String orderField, String order, int pageNum, int pageSize) {
+    public PageInfo<OptLog> queryByPage(String optType, boolean isme, String startTime, String endTime,
+            String orderField, String order, int pageNum, int pageSize) {
 
         return PageHelper.startPage(pageNum, pageSize, true).doSelectPageInfo(new ISelect() {
 
@@ -44,6 +52,18 @@ public class OptLogService {
             public void doSelect() {
                 Example example = new Example(OptLog.class);
                 Example.Criteria criteria = example.createCriteria();
+                if (isme) {
+                    criteria.andEqualTo("createdBy", SessionManager.getAccount());
+                }
+                if (StringUtils.isNotBlank(optType)) {
+                    criteria.andLike("optType", "%" + optType + "%");
+                }
+                if (StringUtils.isNotBlank(startTime)) {
+                    criteria.andGreaterThanOrEqualTo("createdTime", startTime);
+                }
+                if (StringUtils.isNotBlank(endTime)) {
+                    criteria.andLessThanOrEqualTo("createdTime", endTime);
+                }
                 if (StringUtils.isNotBlank(optType)) {
                     criteria.andLike("optType", "%" + optType + "%");
                 }

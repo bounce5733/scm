@@ -27,10 +27,13 @@ public class OptLogRest {
 
     @GetMapping
     public ResponseEntity<PageInfo<OptLog>> queryByPage(@RequestParam("optType") String optType,
-            @RequestParam("orderField") String orderField, @RequestParam("order") String order,
-            @RequestParam("pageNum") int pageNum, @RequestParam("pageSize") int pageSize) {
+            @RequestParam("isme") boolean isme, @RequestParam("startTime") String startTime,
+            @RequestParam("endTime") String endTime, @RequestParam("orderField") String orderField,
+            @RequestParam("order") String order, @RequestParam("pageNum") int pageNum,
+            @RequestParam("pageSize") int pageSize) {
         return new ResponseEntity<PageInfo<OptLog>>(
-                optLogService.queryByPage(optType, orderField, order, pageNum, pageSize), HttpStatus.OK);
+                optLogService.queryByPage(optType, isme, startTime, endTime, orderField, order, pageNum, pageSize),
+                HttpStatus.OK);
     }
 
 }

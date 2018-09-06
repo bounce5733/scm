@@ -28,7 +28,9 @@ public class OptLogMapperTest {
     public void queryByPage() {
         OptLog optlog = new OptLog();
         optlog.setCreatedBy("admin");
-        PageInfo<OptLog> optlogPage = service.queryByPage("", "created_time", "desc", 1, 10);
+        String startTime = "2018-08-30 20:53:15";
+        String endTime = "2018-09-02 22:40:22";
+        PageInfo<OptLog> optlogPage = service.queryByPage("", true, startTime, endTime, "created_time", "desc", 1, 10);
         log.info(JSON.toJSONString(optlogPage));
     }
 
