@@ -2,6 +2,8 @@ package com.jyh.scm.entity;
 
 import java.io.Serializable;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -11,7 +13,10 @@ public class OptLog implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    private Integer appid;// 账套ID
 
     private String userName;
 
@@ -29,6 +34,14 @@ public class OptLog implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getAppid() {
+        return appid;
+    }
+
+    public void setAppid(Integer appid) {
+        this.appid = appid;
     }
 
     public String getUserName() {

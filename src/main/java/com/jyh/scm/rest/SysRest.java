@@ -17,6 +17,7 @@ import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.UserMapper;
 import com.jyh.scm.entity.OptLog;
 import com.jyh.scm.entity.User;
+import com.jyh.scm.service.SysService;
 import com.jyh.scm.util.IDGenUtil;
 import com.jyh.scm.util.TimeUtil;
 
@@ -33,6 +34,9 @@ public class SysRest {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private SysService sysService;
+
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> userMap) {
         // 验证用户
@@ -44,7 +48,8 @@ public class SysRest {
         }
 
         Map<String, String> userinfo = new HashMap<String, String>();
-        userinfo.put(SessionManager.USER_ID_KEY, user.getId());
+        userinfo.put(SessionManager.USERID_KEY, String.valueOf(user.getId()));
+        userinfo.put(SessionManager.APPID_KEY, String.valueOf(user.getAppid()));
         userinfo.put(SessionManager.USER_NAME_KEY, user.getName());
         userinfo.put(SessionManager.USER_ACCOUNT_KEY, user.getAccount());
 
@@ -60,12 +65,32 @@ public class SysRest {
         rtnmsg.put("needCacheAction", needCacheAction);
         // 添加登录日志
         OptLog log = new OptLog();
+        log.setAppid(user.getAppid());
         log.setUserName(user.getName());
+        log.setAppid(user.getAppid());
         log.setCreatedBy(user.getAccount());
         log.setOptType("登录");
         log.setCreatedTime(TimeUtil.getTime());
         CacheManager.logCacheList.add(log);
         return new ResponseEntity<Map<String, Object>>(rtnmsg, HttpStatus.OK);
+    }
+
+    /**
+     * 注册公司
+     * 
+     * @param registerInfo
+     * @return 204 公司名称已被注册 | 226 账号已经存在
+     */
+    @PostMapping("/register")
+    public ResponseEntity<Object> register(@RequestBody Map<String, String> registerInfo) {
+        int flag = sysService.register(registerInfo);
+        if (flag == 1) {
+            return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
+        } else if (flag == 2) {
+            return new ResponseEntity<Object>(HttpStatus.IM_USED);
+        } else {
+            return new ResponseEntity<Object>(HttpStatus.OK);
+        }
     }
 
     @PostMapping("/action")
@@ -78,6 +103,7 @@ public class SysRest {
     public ResponseEntity<Object> logout() {
         // 添加注销日志
         OptLog log = new OptLog();
+        log.setAppid(SessionManager.getAppid());
         log.setUserName(SessionManager.getUsername());
         log.setCreatedBy(SessionManager.getAccount());
         log.setOptType("注销");

@@ -1,4 +1,4 @@
-package com.jyh.scm.rest.baseinfo;
+package com.jyh.scm.rest.bas;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

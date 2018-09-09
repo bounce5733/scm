@@ -70,7 +70,7 @@ public class CodeUtil {
 	}
 
 	public static void main(String[] args) {
-		String msg = "123";
+		String msg = "000";
 		System.out.println(md5Encode(msg));
 	}
 

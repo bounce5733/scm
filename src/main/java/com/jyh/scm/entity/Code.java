@@ -16,68 +16,78 @@ import javax.persistence.Transient;
 @Table(name = "sys_code")
 public class Code {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
+    @Id
+    private String code;
 
-	@Id
-	private String code;
+    private Integer appid; // 账套ID
 
-	private String name;
+    private String name;
 
-	private String createdBy;
+    private String createdBy;
 
-	private String createdTime;
+    private String createdTime;
 
-	@Transient
-	private List<CodeItem> items = new ArrayList<CodeItem>();
+    @Transient
+    private List<CodeItem> items = new ArrayList<CodeItem>();
 
-	public String getCode() {
-		return code;
-	}
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
 
-	public String getCreatedBy() {
-		return createdBy;
-	}
+    public Integer getAppid() {
+        return appid;
+    }
 
-	public String getCreatedTime() {
-		return createdTime;
-	}
+    public void setAppid(Integer appid) {
+        this.appid = appid;
+    }
 
-	public List<CodeItem> getItems() {
-		return items;
-	}
+    public String getCode() {
+        return code;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getCreatedBy() {
+        return createdBy;
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public String getCreatedTime() {
+        return createdTime;
+    }
 
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
+    public List<CodeItem> getItems() {
+        return items;
+    }
 
-	public void setCreatedTime(String createdTime) {
-		this.createdTime = createdTime;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setItems(List<CodeItem> items) {
-		this.items = items;
-	}
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
-	@Override
-	public String toString() {
-		return "Code [code=" + code + ", name=" + name + ", createdBy=" + createdBy + ", createdTime=" + createdTime
-				+ "]";
-	}
+    public void setCreatedTime(String createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public void setItems(List<CodeItem> items) {
+        this.items = items;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "Code [code=" + code + ", name=" + name + ", createdBy=" + createdBy + ", createdTime=" + createdTime
+                + "]";
+    }
 
 }

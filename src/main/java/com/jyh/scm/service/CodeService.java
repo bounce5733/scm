@@ -7,10 +7,14 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.CodeItemMapper;
 import com.jyh.scm.dao.CodeMapper;
 import com.jyh.scm.entity.Code;
 import com.jyh.scm.entity.CodeItem;
+import com.jyh.scm.entity.User;
+
+import tk.mybatis.mapper.entity.Condition;
 
 /**
  * @author jiangyonghua
@@ -19,47 +23,49 @@ import com.jyh.scm.entity.CodeItem;
 @Service
 public class CodeService {
 
-	/**
-	 * 递归收集编码项目
-	 * 
-	 * @param pItems
-	 *            编码父项目列表
-	 * @param codeTtems
-	 *            编码项目列表
-	 */
-	private static void makeCodeItems(List<CodeItem> items, List<CodeItem> pItems, List<CodeItem> codeTtems) {
-		for (CodeItem pItem : pItems) {
-			items.add(pItem);
-			// 收集下级子项目
-			List<CodeItem> child = codeTtems.stream().filter(item -> item.getPid().equals(pItem.getId())).sorted()
-					.collect(Collectors.toList());
-			if (child.size() > 0) {
-				makeCodeItems(items, child, codeTtems);
-			}
-		}
-	}
+    @Autowired
+    private CodeMapper codeMapper;
 
-	@Autowired
-	private CodeItemMapper codeItemMapper;
+    @Autowired
+    private CodeItemMapper codeItemMapper;
 
-	@Autowired
-	private CodeMapper codeMapper;
+    /**
+     * 递归收集编码项目
+     * 
+     * @param pItems
+     *            编码父项目列表
+     * @param codeTtems
+     *            编码项目列表
+     */
+    private static void makeCodeItems(List<CodeItem> items, List<CodeItem> pItems, List<CodeItem> codeTtems) {
+        for (CodeItem pItem : pItems) {
+            items.add(pItem);
+            // 收集下级子项目
+            List<CodeItem> child = codeTtems.stream().filter(item -> item.getPid() == pItem.getId()).sorted()
+                    .collect(Collectors.toList());
+            if (child.size() > 0) {
+                makeCodeItems(items, child, codeTtems);
+            }
+        }
+    }
 
-	public List<Code> codes() {
-		List<Code> codes = codeMapper.selectAll();
-		for (Code code : codes) {
-			List<CodeItem> itemList = new LinkedList<CodeItem>();
-			CodeItem param = new CodeItem();
-			param.setType(code.getCode());
-			List<CodeItem> items = codeItemMapper.select(param);
-			List<CodeItem> topItems = items.stream().filter(item -> "0".equals(item.getPid())).sorted()
-					.collect(Collectors.toList());
+    public List<Code> codes() {
+        Condition c = new Condition(Code.class);
+        c.createCriteria().andEqualTo("appid", SessionManager.getAppid());
+        List<Code> codes = codeMapper.selectAll();
+        for (Code code : codes) {
+            List<CodeItem> itemList = new LinkedList<CodeItem>();
+            CodeItem param = new CodeItem();
+            param.setType(code.getCode());
+            List<CodeItem> items = codeItemMapper.select(param);
+            List<CodeItem> topItems = items.stream().filter(item -> 0 == item.getPid()).sorted()
+                    .collect(Collectors.toList());
 
-			makeCodeItems(itemList, topItems, items);
+            makeCodeItems(itemList, topItems, items);
 
-			code.setItems(itemList);
-		}
-		return codes;
-	}
+            code.setItems(itemList);
+        }
+        return codes;
+    }
 
 }

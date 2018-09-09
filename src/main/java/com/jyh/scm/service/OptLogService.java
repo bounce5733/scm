@@ -52,6 +52,7 @@ public class OptLogService {
             public void doSelect() {
                 Example example = new Example(OptLog.class);
                 Example.Criteria criteria = example.createCriteria();
+                criteria.andEqualTo("appid", SessionManager.getAppid());
                 if (isme) {
                     criteria.andEqualTo("createdBy", SessionManager.getAccount());
                 }

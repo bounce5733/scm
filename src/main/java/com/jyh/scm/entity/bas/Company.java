@@ -1,5 +1,7 @@
 package com.jyh.scm.entity.bas;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -9,31 +11,25 @@ import javax.persistence.Table;
  * @author jiangyonghua
  * @date 2018年9月6日 下午10:35:22
  */
-@Table(name = "bas_company_info")
+@Table(name = "bas_company")
 public class Company {
 
     private static final long serialVersionUID = 1L;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    // 账套，母公司为0，其他为母公司ID
+    private Integer appid;
+
     private String name;
+
+    private Integer linkman;
 
     private String industryCategory;
 
     private String area;
-
-    private String email;
-
-    private String linkman;
-
-    private String position;
-
-    private String mobile;
-
-    private String qq;
-
-    private String linkmanEmail;
 
     private String address;
 
@@ -67,12 +63,28 @@ public class Company {
         this.id = id;
     }
 
+    public Integer getAppid() {
+        return appid;
+    }
+
+    public void setAppid(Integer appid) {
+        this.appid = appid;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getLinkman() {
+        return linkman;
+    }
+
+    public void setLinkman(Integer linkman) {
+        this.linkman = linkman;
     }
 
     public String getIndustryCategory() {
@@ -89,54 +101,6 @@ public class Company {
 
     public void setArea(String area) {
         this.area = area;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getLinkman() {
-        return linkman;
-    }
-
-    public void setLinkman(String linkman) {
-        this.linkman = linkman;
-    }
-
-    public String getPosition() {
-        return position;
-    }
-
-    public void setPosition(String position) {
-        this.position = position;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public String getQq() {
-        return qq;
-    }
-
-    public void setQq(String qq) {
-        this.qq = qq;
-    }
-
-    public String getLinkmanEmail() {
-        return linkmanEmail;
-    }
-
-    public void setLinkmanEmail(String linkmanEmail) {
-        this.linkmanEmail = linkmanEmail;
     }
 
     public String getAddress() {

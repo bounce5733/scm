@@ -23,7 +23,9 @@ public class SessionManager {
 
     public static final String SESSION_KEY = "X-Auth-Token";
 
-    public static final String USER_ID_KEY = "userid";
+    public static final String USERID_KEY = "userid";
+
+    public static final String APPID_KEY = "appid";
 
     public static final String USER_NAME_KEY = "username";
 
@@ -41,11 +43,23 @@ public class SessionManager {
         }
     }
 
-    public static String getUserid() {
+    public static String getSessionid() {
+        return SESSION_THREAD_LOCAL.get();
+    }
+
+    public static int getUserid() {
         if (userinfo() != null) {
-            return userinfo().get(USER_ID_KEY);
+            return Integer.valueOf(userinfo().get(USERID_KEY));
         } else {
-            return "";
+            return -1;
+        }
+    }
+
+    public static int getAppid() {
+        if (userinfo() != null) {
+            return Integer.valueOf(userinfo().get(APPID_KEY));
+        } else {
+            return -1;
         }
     }
 

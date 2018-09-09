@@ -9,5 +9,5 @@ import com.jyh.scm.entity.User;
 
 public interface UserMapper extends Mapper<User> {
 
-	List<User> roleUsers(@Param("roleid") String roleid);
+	List<User> roleUsers(@Param("roleid") int roleid);
 }

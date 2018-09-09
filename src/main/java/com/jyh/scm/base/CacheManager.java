@@ -32,11 +32,11 @@ public class CacheManager {
 
     private static final Logger log = LoggerFactory.getLogger(CacheManager.class);
 
-    // 码表缓存{type:[codes]}
-    private static LoadingCache<String, List<CodeItem>> codeCache;
+    // 码表缓存{appid:<type:[codes]>}
+    private static LoadingCache<String, Map<String, List<CodeItem>>> codeCache;
 
-    // 码表缓存{id:{path:'',name:''}}
-    private static LoadingCache<String, Map<String, Object>> pathMapCodeCache;
+    // 码表缓存{appid:<id:{path:'',name:''}>}
+    private static LoadingCache<String, Map<String, Map<String, Object>>> pathMapCodeCache;
 
     // 系统功能名称映射，如：{post_users:新增用户}
     private static LoadingCache<String, String> actionCache;
@@ -52,16 +52,16 @@ public class CacheManager {
 
     @PostConstruct
     public void init() {
-        codeCache = CacheBuilder.newBuilder().build(new CacheLoader<String, List<CodeItem>>() {
+        codeCache = CacheBuilder.newBuilder().build(new CacheLoader<String, Map<String, List<CodeItem>>>() {
             @Override
-            public List<CodeItem> load(String key) throws Exception {
-                return new ArrayList<CodeItem>();
+            public Map<String, List<CodeItem>> load(String key) throws Exception {
+                return new HashMap<String, List<CodeItem>>();
             }
         });
-        pathMapCodeCache = CacheBuilder.newBuilder().build(new CacheLoader<String, Map<String, Object>>() {
+        pathMapCodeCache = CacheBuilder.newBuilder().build(new CacheLoader<String, Map<String, Map<String, Object>>>() {
             @Override
-            public Map<String, Object> load(String key) throws Exception {
-                return new HashMap<String, Object>();
+            public Map<String, Map<String, Object>> load(String key) throws Exception {
+                return new HashMap<String, Map<String, Object>>();
             }
         });
         actionCache = CacheBuilder.newBuilder().build(new CacheLoader<String, String>() {
@@ -78,27 +78,40 @@ public class CacheManager {
      * @throws ExecutionException
      */
     @PostConstruct
-    public Map<String, List<CodeItem>> loadCode() {
-        ConcurrentMap<String, List<CodeItem>> cacheCodes = codeCache.asMap();
+    public Map<String, Map<String, List<CodeItem>>> loadCode() {
+        ConcurrentMap<String, Map<String, List<CodeItem>>> cacheCodes = codeCache.asMap();
         if (cacheCodes == null || cacheCodes.isEmpty()) {
             log.info("加载码表{type:[codes]}缓存...");
             // 组装码表数结构
             List<Code> codes = codeMapper.selectAll();
-            for (Code code : codes) {
-                CodeItem param = new CodeItem();
-                param.setType(code.getCode());
-                List<CodeItem> items = codeItemMapper.select(param);
-                log.info(JSON.toJSONString(items));
-                List<CodeItem> topCodes = items.stream().filter(item -> "0".equals(item.getPid())).sorted()
-                        .collect(Collectors.toList());
-
-                makeCodeTree(topCodes, items);
-
-                // 为各条目添加主键路径
-                for (CodeItem topCode : topCodes) {
-                    topCode.makePath(new LinkedList<String>());
+            // 按appid归类
+            Map<String, List<Code>> allAppCodeMap = new HashMap<String, List<Code>>();
+            codes.forEach(code -> {
+                String appid = String.valueOf(code.getAppid());
+                if (allAppCodeMap.get(appid) == null) {
+                    allAppCodeMap.put(appid, new ArrayList<Code>());
                 }
-                cacheCodes.put(String.valueOf(code.getCode()), topCodes);
+                allAppCodeMap.get(appid).add(code);
+            });
+
+            for (String appid : allAppCodeMap.keySet()) {
+                Map<String, List<CodeItem>> appCodeMap = new HashMap<String, List<CodeItem>>();
+                for (Code code : allAppCodeMap.get(appid)) {
+                    CodeItem param = new CodeItem();
+                    param.setType(code.getCode());
+                    List<CodeItem> items = codeItemMapper.select(param);
+                    log.info(JSON.toJSONString(items));
+                    List<CodeItem> topCodes = items.stream().filter(item -> 0 == item.getPid()).sorted()
+                            .collect(Collectors.toList());
+                    makeCodeTree(topCodes, items);
+
+                    // 为各条目添加主键路径
+                    for (CodeItem topCode : topCodes) {
+                        topCode.makePath(new LinkedList<Integer>());
+                    }
+                    appCodeMap.put(code.getCode(), topCodes);
+                }
+                cacheCodes.put(appid, appCodeMap);
             }
         }
         return cacheCodes;
@@ -109,36 +122,48 @@ public class CacheManager {
      * 
      */
     @PostConstruct
-    public Map<String, Map<String, Object>> loadCodePathMap() {
-        ConcurrentMap<String, Map<String, Object>> cacheCodePathMap = pathMapCodeCache.asMap();
+    public Map<String, Map<String, Map<String, Object>>> loadCodePathMap() {
+        ConcurrentMap<String, Map<String, Map<String, Object>>> cacheCodePathMap = pathMapCodeCache.asMap();
         if (cacheCodePathMap == null || cacheCodePathMap.isEmpty()) {
             log.info("加载码表{id:{path:'',name:''}}映射缓存...");
             Map<String, List<CodeItem>> codeCache = new HashMap<String, List<CodeItem>>();
             // 组装码表数结构
             List<Code> codes = codeMapper.selectAll();
-            for (Code code : codes) {
-                CodeItem param = new CodeItem();
-                param.setType(code.getCode());
-                List<CodeItem> items = codeItemMapper.select(param);
 
-                List<CodeItem> topCodes = items.stream().filter(item -> "0".equals(item.getPid())).sorted()
-                        .collect(Collectors.toList());
-
-                makeCodeTree(topCodes, items);
-
-                // 为各项目添加主键路径
-                for (CodeItem topCode : topCodes) {
-                    topCode.makePath(new LinkedList<String>());
+            // 按appid归类
+            Map<String, List<Code>> allAppCodeMap = new HashMap<String, List<Code>>();
+            codes.forEach(code -> {
+                String appid = String.valueOf(code.getAppid());
+                if (allAppCodeMap.get(appid) == null) {
+                    allAppCodeMap.put(appid, new ArrayList<Code>());
                 }
+                allAppCodeMap.get(appid).add(code);
+            });
 
-                codeCache.put(code.getCode(), topCodes);
-            }
+            for (String appid : allAppCodeMap.keySet()) {
+                Map<String, Map<String, Object>> appCodeMap = new HashMap<String, Map<String, Object>>();
+                for (Code code : allAppCodeMap.get(appid)) {
+                    CodeItem param = new CodeItem();
+                    param.setType(code.getCode());
+                    List<CodeItem> items = codeItemMapper.select(param);
+                    List<CodeItem> topCodes = items.stream().filter(item -> 0 == item.getPid()).sorted()
+                            .collect(Collectors.toList());
 
-            // 组装码表主键映射map
-            for (String key : codeCache.keySet()) {
-                for (CodeItem code : codeCache.get(key)) {
-                    makeCodeMap(cacheCodePathMap, code);
+                    makeCodeTree(topCodes, items);
+
+                    // 为各项目添加主键路径
+                    for (CodeItem topCode : topCodes) {
+                        topCode.makePath(new LinkedList<Integer>());
+                    }
+                    codeCache.put(code.getCode(), topCodes);
                 }
+                // 组装码表主键映射map
+                for (String key : codeCache.keySet()) {
+                    for (CodeItem code : codeCache.get(key)) {
+                        makeCodeMap(appCodeMap, code);
+                    }
+                }
+                cacheCodePathMap.put(appid, appCodeMap);
             }
         }
         return cacheCodePathMap;
@@ -175,7 +200,7 @@ public class CacheManager {
         codeMapItem.put("name", code.getName());
         codeMapItem.put("path", code.getPath());
         code.setPath(null);
-        codemap.put(code.getId(), codeMapItem);
+        codemap.put(String.valueOf(code.getId()), codeMapItem);
         if (code.getChildren() != null) {
             for (CodeItem item : code.getChildren()) {
                 makeCodeMap(codemap, item);

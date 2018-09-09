@@ -2,6 +2,8 @@ package com.jyh.scm.entity;
 
 import java.io.Serializable;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -14,98 +16,102 @@ import javax.persistence.Table;
 @Table(name = "sys_role")
 public class Role implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-	@Id
-	private String id;// UUID主键
+    private Integer appid;// 账套ID
 
-	private String name;// 角色名称
+    private String name;// 角色名称
 
-	private String descn;// 角色信息描述
+    private String descn;// 角色信息描述
 
-	private String enabled;// 是否启用 T|F
+    private String enabled;// 是否启用 T|F
 
-	private String createdBy;// 创建人
+    private String createdBy;// 创建人
 
-	private String createdTime;// 创建时间
+    private String createdTime;// 创建时间
 
-	private String updatedBy;// 更新人
+    private String updatedBy;// 更新人
 
-	private String updatedTime;// 更新时间
+    private String updatedTime;// 更新时间
 
-	public String getCreatedBy() {
-		return createdBy;
-	}
+    public String getCreatedBy() {
+        return createdBy;
+    }
 
-	public String getCreatedTime() {
-		return createdTime;
-	}
+    public String getCreatedTime() {
+        return createdTime;
+    }
 
-	public String getDescn() {
-		return descn;
-	}
+    public String getDescn() {
+        return descn;
+    }
 
-	public String getEnabled() {
-		return enabled;
-	}
+    public String getEnabled() {
+        return enabled;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Integer getAppid() {
+        return appid;
+    }
 
-	public String getUpdatedBy() {
-		return updatedBy;
-	}
+    public void setAppid(Integer appid) {
+        this.appid = appid;
+    }
 
-	public String getUpdatedTime() {
-		return updatedTime;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
 
-	public void setCreatedTime(String createdTime) {
-		this.createdTime = createdTime;
-	}
+    public String getUpdatedTime() {
+        return updatedTime;
+    }
 
-	public void setDescn(String descn) {
-		this.descn = descn;
-	}
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
-	public void setEnabled(String enabled) {
-		this.enabled = enabled;
-	}
+    public void setCreatedTime(String createdTime) {
+        this.createdTime = createdTime;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setDescn(String descn) {
+        this.descn = descn;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setEnabled(String enabled) {
+        this.enabled = enabled;
+    }
 
-	public void setUpdatedBy(String updatedBy) {
-		this.updatedBy = updatedBy;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setUpdatedTime(String updatedTime) {
-		this.updatedTime = updatedTime;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	@Override
-	public String toString() {
-		return "Role [id=" + id + ", name=" + name + ", descn=" + descn + ", enabled=" + enabled + ", createdBy="
-				+ createdBy + ", createdTime=" + createdTime + ", updatedBy=" + updatedBy + ", updatedTime="
-				+ updatedTime + "]";
-	}
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public void setUpdatedTime(String updatedTime) {
+        this.updatedTime = updatedTime;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
 
 }

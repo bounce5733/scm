@@ -30,6 +30,7 @@ public class ActionAspect {
         Signature signature = joinPoint.getSignature();
         if (CacheManager.getActionMap().get(signature.getName()) != null) {
             OptLog log = new OptLog();
+            log.setAppid(SessionManager.getAppid());
             log.setUserName(SessionManager.getUsername());
             log.setOptLog(JSON.toJSONString(joinPoint.getArgs()));
             log.setCreatedBy(SessionManager.getAccount());
