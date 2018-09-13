@@ -36,7 +36,7 @@ public class SessionManager {
     private static LoadingCache<String, Map<String, String>> session;
 
     public static String getAccount() {
-        if (userinfo() != null) {
+        if (userinfo() != null && !userinfo().isEmpty()) {
             return userinfo().get(USER_ACCOUNT_KEY);
         } else {
             return "";
@@ -48,7 +48,7 @@ public class SessionManager {
     }
 
     public static int getUserid() {
-        if (userinfo() != null) {
+        if (userinfo() != null && !userinfo().isEmpty()) {
             return Integer.valueOf(userinfo().get(USERID_KEY));
         } else {
             return -1;
@@ -56,7 +56,7 @@ public class SessionManager {
     }
 
     public static int getAppid() {
-        if (userinfo() != null) {
+        if (userinfo() != null && !userinfo().isEmpty()) {
             return Integer.valueOf(userinfo().get(APPID_KEY));
         } else {
             return -1;
@@ -64,7 +64,7 @@ public class SessionManager {
     }
 
     public static String getUsername() {
-        if (userinfo() != null) {
+        if (userinfo() != null && !userinfo().isEmpty()) {
             return userinfo().get(USER_NAME_KEY);
         } else {
             return "";
