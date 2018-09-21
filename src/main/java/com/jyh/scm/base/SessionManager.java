@@ -25,8 +25,6 @@ public class SessionManager {
 
     public static final String USERID_KEY = "userid";
 
-    public static final String APPID_KEY = "appid";
-
     public static final String USER_NAME_KEY = "username";
 
     public static final String USER_ACCOUNT_KEY = "account";
@@ -57,7 +55,7 @@ public class SessionManager {
 
     public static int getAppid() {
         if (userinfo() != null && !userinfo().isEmpty()) {
-            return Integer.valueOf(userinfo().get(APPID_KEY));
+            return Integer.valueOf(userinfo().get(AppConst.APPID_KEY));
         } else {
             return -1;
         }
@@ -101,7 +99,7 @@ public class SessionManager {
         return null;
     }
 
-    @Value("${session.expiredTime}")
+    @Value("${custom.session.expiredTime}")
     private int expiredTime;
 
     @PostConstruct

@@ -8,8 +8,8 @@
 	</insert>
 
 	<insert id="assignUser">
-		INSERT INTO sys_role_user (appid,role_id,user_id) VALUES
-		(#{appid},#{roleid},#{userid})
+		INSERT INTO sys_role_user (role_id,user_id) VALUES
+		(#{roleid},#{userid})
 	</insert>
 
 	<delete id="clearAssignedUsers">

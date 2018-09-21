@@ -10,10 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.RoleMapper;
-import com.jyh.scm.entity.Code;
 import com.jyh.scm.entity.Role;
+import com.jyh.scm.entity.code.Code;
 
 import tk.mybatis.mapper.entity.Condition;
 
@@ -71,7 +72,7 @@ public class RoleService {
 
     public List<Role> load() {
         Condition c = new Condition(Code.class);
-        c.createCriteria().andEqualTo("appid", SessionManager.getAppid());
+        c.createCriteria().andEqualTo(AppConst.APPID_KEY, SessionManager.getAppid());
         return roleMapper.selectByCondition(c);
     }
 

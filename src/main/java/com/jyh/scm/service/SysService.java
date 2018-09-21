@@ -13,6 +13,8 @@ import com.jyh.scm.dao.UserMapper;
 import com.jyh.scm.dao.bas.CompanyMapper;
 import com.jyh.scm.entity.User;
 import com.jyh.scm.entity.bas.Company;
+import com.jyh.scm.entity.code.Warehouse;
+import com.jyh.scm.util.CodeUtil;
 import com.jyh.scm.util.TimeUtil;
 
 /**
@@ -55,8 +57,9 @@ public class SysService {
         if (count > 0) {
             return 2;
         }
-
         // 保存母公司
+        company.setLinkmanName(registerInfo.get("name"));
+        company.setLinkmanMobile(registerInfo.get("mobile"));
         company.setCreatedBy(registerInfo.get("account"));
         company.setCreatedTime(TimeUtil.getTime());
         companyMapper.insertSelective(company);
@@ -70,7 +73,7 @@ public class SysService {
         // 保存联系人
         user.setAppid(companyid);
         user.setName(registerInfo.get("name"));
-        user.setPwd(AppConst.SYS_DEFAULT_PWD);
+        user.setPwd(CodeUtil.md5Encode(registerInfo.get("password")));
         user.setMobile(registerInfo.get("mobile"));
         user.setCreatedBy(registerInfo.get("account"));
         user.setCreatedTime(TimeUtil.getTime());
@@ -81,14 +84,16 @@ public class SysService {
         user.setAccount(registerInfo.get("account"));
         user = userMapper.selectOne(user);
 
+        // 创建默认仓库
+        Warehouse warehouse = new Warehouse();
+        warehouse.setCode(AppConst.DEFAULT_WAREHOUSE_CODE);
+        warehouse.setName(AppConst.DEFAULT_WAREHOUSE_NAME);
+        warehouse.setDefaulted("T");
+        warehouse.setCreatedBy(registerInfo.get("account"));
+        warehouse.setCreatedTime(TimeUtil.getTime());
+
         // 授权超级管理员
         roleMapper.assignUser(AppConst.SUPER_ADMIN_ROLEID, user.getId());
-
-        // 更新公司联系人
-        company = new Company();
-        company.setId(companyid);
-        company.setLinkman(user.getId());
-        companyMapper.updateByPrimaryKeySelective(company);
 
         return 0;
     }

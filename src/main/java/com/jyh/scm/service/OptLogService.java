@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.github.pagehelper.ISelect;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.OptLogMapper;
 import com.jyh.scm.entity.OptLog;
@@ -52,7 +53,7 @@ public class OptLogService {
             public void doSelect() {
                 Example example = new Example(OptLog.class);
                 Example.Criteria criteria = example.createCriteria();
-                criteria.andEqualTo("appid", SessionManager.getAppid());
+                criteria.andEqualTo(AppConst.APPID_KEY, SessionManager.getAppid());
                 if (isme) {
                     criteria.andEqualTo("createdBy", SessionManager.getAccount());
                 }

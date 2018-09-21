@@ -2,8 +2,6 @@ package com.jyh.scm.base;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author jiangyonghua
@@ -14,6 +12,8 @@ public class AppConst {
     public static final String ENCODING = "UTF-8";
 
     public static final String APPID = "scm";
+    
+    public static final String APPID_KEY = "appid";
 
     public static final String SYS_DEFAULT_PWD = "c6f057b86584942e415435ffb1fa93d4";
 
@@ -29,15 +29,17 @@ public class AppConst {
 
     public static final String MAPPER_INTERFACE_REFERENCE = BASE_PACKAGE + ".base.Mapper";// Mapper插件基础接口的完全限定名
 
-    // base64图片缓存
-    public final static ConcurrentMap<String, String> BASE64_IMG_CACHE = new ConcurrentHashMap<String, String>();
-
     // 菜单路径随机字符串长度
     public static final int MENU_PATH_LENGTH = 8;
 
     // 免验证资源
     public static final List<String> AUTH_SKIP_URI = new ArrayList<String>();
 
+    //------默认仓库------
+    public static final String DEFAULT_WAREHOUSE_CODE = "001";
+    
+    public static final String DEFAULT_WAREHOUSE_NAME = "默认仓";
+    
     static {
         AUTH_SKIP_URI.add("/sys/login");
         AUTH_SKIP_URI.add("/sys/register");

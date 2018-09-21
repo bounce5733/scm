@@ -1,4 +1,4 @@
-package com.jyh.scm.entity;
+package com.jyh.scm.entity.code;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import com.jyh.scm.entity.CodeItem;
 
 /**
  * 编码子项

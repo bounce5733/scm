@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -15,6 +16,7 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import com.alibaba.fastjson.JSON;
@@ -23,9 +25,9 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.jyh.scm.dao.CodeItemMapper;
 import com.jyh.scm.dao.CodeMapper;
-import com.jyh.scm.entity.Code;
 import com.jyh.scm.entity.CodeItem;
 import com.jyh.scm.entity.OptLog;
+import com.jyh.scm.entity.code.Code;
 
 @Configuration
 public class CacheManager {
@@ -43,6 +45,12 @@ public class CacheManager {
 
     // 日志缓存列表
     public static List<OptLog> logCacheList = Collections.synchronizedList(new ArrayList<OptLog>());
+
+    // base64图片缓存
+    private static LoadingCache<String, String> base64ImgCache;
+
+    @Value("${custom.cache.base64ImgCache.expiredTime}")
+    private int expiredTime;
 
     @Autowired
     private CodeMapper codeMapper;
@@ -70,6 +78,13 @@ public class CacheManager {
                 return new String();
             }
         });
+        base64ImgCache = CacheBuilder.newBuilder().expireAfterAccess(expiredTime, TimeUnit.MINUTES)
+                .build(new CacheLoader<String, String>() {
+                    @Override
+                    public String load(String key) throws Exception {
+                        return new String();
+                    }
+                });
     }
 
     /**
@@ -234,6 +249,29 @@ public class CacheManager {
         pathMapCodeCache.invalidateAll();
         this.loadCode();
         this.loadCodePathMap();
+    }
+
+    /**
+     * 缓存图像
+     * 
+     * @param base64Img
+     */
+    public static void cacheBase64Img(String base64Img) {
+        base64ImgCache.put(SessionManager.getSessionid(), base64Img);
+    }
+
+    /**
+     * 获取缓存图像
+     * 
+     * @return
+     */
+    public static String getBase64Img() {
+        try {
+            return base64ImgCache.get(SessionManager.getSessionid());
+        } catch (ExecutionException e) {
+            log.error(e.getMessage());
+            return null;
+        }
     }
 
 }

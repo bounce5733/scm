@@ -1,5 +1,6 @@
 package com.jyh.scm.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.RoleMapper;
 import com.jyh.scm.entity.Role;
@@ -90,8 +92,13 @@ public class RoleRest {
     @GetMapping
     public ResponseEntity<List<Role>> loadRole() {
         Condition c = new Condition(User.class);
-        c.createCriteria().andEqualTo("appid", SessionManager.getAppid());
-        return new ResponseEntity<List<Role>>(roleMapper.selectByCondition(c), HttpStatus.OK);
+        c.createCriteria().andEqualTo(AppConst.APPID_KEY, SessionManager.getAppid());
+        List<Role> allRoles = new ArrayList<Role>();
+        Role superRole = roleMapper.selectByPrimaryKey(AppConst.SUPER_ADMIN_ROLEID);
+        allRoles.add(superRole);
+        List<Role> roles = roleMapper.selectByCondition(c);
+        allRoles.addAll(roles);
+        return new ResponseEntity<List<Role>>(allRoles, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

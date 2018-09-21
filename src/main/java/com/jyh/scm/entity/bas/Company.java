@@ -25,11 +25,11 @@ public class Company {
 
     private String name;
 
-    private Integer linkman;
+    private Integer industryCategory;
 
-    private String industryCategory;
+    private Integer area;
 
-    private String area;
+    private String postcode;
 
     private String address;
 
@@ -39,6 +39,8 @@ public class Company {
 
     private String webSite;
 
+    private String avatar;
+
     private String descn;
 
     private String nsrsbh;
@@ -46,6 +48,16 @@ public class Company {
     private String invoiceTitle;
 
     private String serviceTel;
+
+    private String linkmanName;
+
+    private String linkmanPosition;
+
+    private String linkmanMobile;
+
+    private String linkmanQq;
+
+    private String linkmanEmail;
 
     private String createdBy;// 创建人
 
@@ -79,28 +91,28 @@ public class Company {
         this.name = name;
     }
 
-    public Integer getLinkman() {
-        return linkman;
-    }
-
-    public void setLinkman(Integer linkman) {
-        this.linkman = linkman;
-    }
-
-    public String getIndustryCategory() {
+    public Integer getIndustryCategory() {
         return industryCategory;
     }
 
-    public void setIndustryCategory(String industryCategory) {
+    public void setIndustryCategory(Integer industryCategory) {
         this.industryCategory = industryCategory;
     }
 
-    public String getArea() {
+    public Integer getArea() {
         return area;
     }
 
-    public void setArea(String area) {
+    public void setArea(Integer area) {
         this.area = area;
+    }
+
+    public String getPostcode() {
+        return postcode;
+    }
+
+    public void setPostcode(String postcode) {
+        this.postcode = postcode;
     }
 
     public String getAddress() {
@@ -109,6 +121,14 @@ public class Company {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public String getTel() {
@@ -165,6 +185,46 @@ public class Company {
 
     public void setServiceTel(String serviceTel) {
         this.serviceTel = serviceTel;
+    }
+
+    public String getLinkmanName() {
+        return linkmanName;
+    }
+
+    public void setLinkmanName(String linkmanName) {
+        this.linkmanName = linkmanName;
+    }
+
+    public String getLinkmanPosition() {
+        return linkmanPosition;
+    }
+
+    public void setLinkmanPosition(String linkmanPosition) {
+        this.linkmanPosition = linkmanPosition;
+    }
+
+    public String getLinkmanMobile() {
+        return linkmanMobile;
+    }
+
+    public void setLinkmanMobile(String linkmanMobile) {
+        this.linkmanMobile = linkmanMobile;
+    }
+
+    public String getLinkmanQq() {
+        return linkmanQq;
+    }
+
+    public void setLinkmanQq(String linkmanQq) {
+        this.linkmanQq = linkmanQq;
+    }
+
+    public String getLinkmanEmail() {
+        return linkmanEmail;
+    }
+
+    public void setLinkmanEmail(String linkmanEmail) {
+        this.linkmanEmail = linkmanEmail;
     }
 
     public String getCreatedBy() {

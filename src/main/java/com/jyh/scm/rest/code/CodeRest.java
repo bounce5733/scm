@@ -1,4 +1,4 @@
-package com.jyh.scm.rest;
+package com.jyh.scm.rest.code;
 
 import java.util.List;
 import java.util.Map;
@@ -22,9 +22,9 @@ import com.jyh.scm.base.CacheManager;
 import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.CodeItemMapper;
 import com.jyh.scm.dao.CodeMapper;
-import com.jyh.scm.entity.Code;
 import com.jyh.scm.entity.CodeItem;
-import com.jyh.scm.service.CodeService;
+import com.jyh.scm.entity.code.Code;
+import com.jyh.scm.service.code.CodeService;
 import com.jyh.scm.util.TimeUtil;
 
 /**
@@ -34,7 +34,7 @@ import com.jyh.scm.util.TimeUtil;
  * @date 2017年12月27日 下午4:17:33
  */
 @RestController
-@RequestMapping(path = "codes")
+@RequestMapping(path = "code/codes")
 public class CodeRest {
 
     private static final Logger log = LoggerFactory.getLogger(CodeRest.class);

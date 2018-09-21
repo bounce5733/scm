@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.RoleMapper;
 import com.jyh.scm.dao.UserMapper;
@@ -31,14 +32,14 @@ public class UserService {
 
     public List<User> load() {
         Condition c = new Condition(User.class);
-        c.createCriteria().andEqualTo("appid", SessionManager.getAppid());
+        c.createCriteria().andEqualTo(AppConst.APPID_KEY, SessionManager.getAppid());
         return userMapper.selectByCondition(c);
     }
 
     public List<User> query(String param) {
         Condition c = new Condition(User.class);
         c.createCriteria().andCondition("account LIKE '%" + param + "%' OR name LIKE '%" + param + "%'")
-                .andEqualTo("appid", SessionManager.getAppid());
+                .andEqualTo(AppConst.APPID_KEY, SessionManager.getAppid());
         return userMapper.selectByCondition(c);
     }
 

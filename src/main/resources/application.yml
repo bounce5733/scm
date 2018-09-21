@@ -6,8 +6,12 @@ spring:
   profiles:  
     active: dev
 ---
-session:
-  expiredTime: 30 #分钟
+custom: 
+  session:
+    expiredTime: 30 #分钟
+  cache:
+    base64ImgCache:
+     expiredTime: 30 #分钟
 spring:
   profiles: dev
   datasource:

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.CacheManager;
 import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.UserMapper;
@@ -49,7 +50,7 @@ public class SysRest {
 
         Map<String, String> userinfo = new HashMap<String, String>();
         userinfo.put(SessionManager.USERID_KEY, String.valueOf(user.getId()));
-        userinfo.put(SessionManager.APPID_KEY, String.valueOf(user.getAppid()));
+        userinfo.put(AppConst.APPID_KEY, String.valueOf(user.getAppid()));
         userinfo.put(SessionManager.USER_NAME_KEY, user.getName());
         userinfo.put(SessionManager.USER_ACCOUNT_KEY, user.getAccount());
 

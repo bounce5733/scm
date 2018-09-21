@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.jyh.scm.base.AppConst;
-import com.jyh.scm.base.SessionManager;
+import com.jyh.scm.base.CacheManager;
 import com.jyh.scm.util.CodeUtil;
 
 @RestController
@@ -27,7 +26,7 @@ public class AttachRest {
     @ResponseBody
     public ResponseEntity<Object> companyAvatar(@RequestParam(value = "file") MultipartFile file) {
         try {
-            AppConst.BASE64_IMG_CACHE.put(SessionManager.getSessionid(), CodeUtil.base64Encode(file.getBytes()));
+            CacheManager.cacheBase64Img(CodeUtil.base64Encode(file.getBytes()));
         } catch (IOException e) {
             log.error(e.getMessage());
             return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
