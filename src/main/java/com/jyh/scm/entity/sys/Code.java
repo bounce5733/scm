@@ -1,4 +1,4 @@
-package com.jyh.scm.entity.code;
+package com.jyh.scm.entity.sys;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,6 @@ import java.util.List;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import com.jyh.scm.entity.CodeItem;
 
 /**
  * 编码子项
@@ -23,7 +21,7 @@ public class Code {
     @Id
     private String code;
 
-    private Integer appid; // 账套ID
+    private Integer appid;
 
     private String name;
 
@@ -33,10 +31,6 @@ public class Code {
 
     @Transient
     private List<CodeItem> items = new ArrayList<CodeItem>();
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
 
     public Integer getAppid() {
         return appid;
@@ -86,10 +80,8 @@ public class Code {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return "Code [code=" + code + ", name=" + name + ", createdBy=" + createdBy + ", createdTime=" + createdTime
-                + "]";
+    public static long getSerialversionuid() {
+        return serialVersionUID;
     }
 
 }

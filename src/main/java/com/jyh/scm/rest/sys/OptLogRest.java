@@ -1,4 +1,4 @@
-package com.jyh.scm.rest;
+package com.jyh.scm.rest.sys;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.pagehelper.PageInfo;
-import com.jyh.scm.entity.OptLog;
-import com.jyh.scm.service.OptLogService;
+import com.jyh.scm.entity.sys.OptLog;
+import com.jyh.scm.service.sys.OptLogService;
 
 /**
  * 操作日志
@@ -19,7 +19,7 @@ import com.jyh.scm.service.OptLogService;
  * @date 2018年8月31日 上午12:42:57
  */
 @RestController
-@RequestMapping(path = "optlogs")
+@RequestMapping(path = "sys/optlogs")
 public class OptLogRest {
 
     @Autowired

@@ -11,8 +11,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
-import com.jyh.scm.entity.OptLog;
-import com.jyh.scm.service.OptLogService;
+import com.jyh.scm.dao.sys.OptLogMapper;
+import com.jyh.scm.entity.sys.OptLog;
+import com.jyh.scm.service.sys.OptLogService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

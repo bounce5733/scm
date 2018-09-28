@@ -1,4 +1,4 @@
-package com.jyh.scm.service;
+package com.jyh.scm.service.sys;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +9,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.SessionManager;
-import com.jyh.scm.dao.OptLogMapper;
-import com.jyh.scm.entity.OptLog;
+import com.jyh.scm.dao.sys.OptLogMapper;
+import com.jyh.scm.entity.sys.OptLog;
 import com.jyh.scm.util.StringUtil;
 
 import tk.mybatis.mapper.entity.Example;

@@ -14,7 +14,7 @@ import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.RoleMapper;
 import com.jyh.scm.entity.Role;
-import com.jyh.scm.entity.code.Code;
+import com.jyh.scm.entity.sys.Code;
 
 import tk.mybatis.mapper.entity.Condition;
 

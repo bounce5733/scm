@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.MultiValueMap;
 
 import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.SessionManager;
@@ -40,7 +39,7 @@ public class WarehouseService {
 
         warehouse.setId(id);
         warehouse.setDefaulted("T");
-        warehouse.setDisabled("F");
+        warehouse.setEnabled("T");
         warehouse.setUpdatedBy(SessionManager.getAccount());
         warehouse.setUpdatedTime(TimeUtil.getTime());
         warehouseMapper.updateByPrimaryKeySelective(warehouse);

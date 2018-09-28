@@ -8,7 +8,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
-import com.jyh.scm.entity.OptLog;
+import com.jyh.scm.entity.sys.OptLog;
 import com.jyh.scm.util.TimeUtil;
 
 /**
@@ -36,7 +36,7 @@ public class ActionAspect {
             log.setCreatedBy(SessionManager.getAccount());
             log.setOptType(CacheManager.getActionMap().get(signature.getName()));
             log.setCreatedTime(TimeUtil.getTime());
-            CacheManager.logCacheList.add(log);
+            CacheManager.LOG_CACHE_LIST.add(log);
         }
     }
 }

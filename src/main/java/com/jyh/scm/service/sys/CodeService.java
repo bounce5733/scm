@@ -1,4 +1,4 @@
-package com.jyh.scm.service.code;
+package com.jyh.scm.service.sys;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -9,10 +9,10 @@ import org.springframework.stereotype.Service;
 
 import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.SessionManager;
-import com.jyh.scm.dao.CodeItemMapper;
-import com.jyh.scm.dao.CodeMapper;
-import com.jyh.scm.entity.CodeItem;
-import com.jyh.scm.entity.code.Code;
+import com.jyh.scm.dao.sys.CodeItemMapper;
+import com.jyh.scm.dao.sys.CodeMapper;
+import com.jyh.scm.entity.sys.Code;
+import com.jyh.scm.entity.sys.CodeItem;
 
 import tk.mybatis.mapper.entity.Condition;
 
@@ -28,6 +28,25 @@ public class CodeService {
 
     @Autowired
     private CodeItemMapper codeItemMapper;
+
+    public List<Code> loadCode() {
+        Condition c = new Condition(Code.class);
+        c.createCriteria().andEqualTo(AppConst.APPID_KEY, SessionManager.getAppid());
+        List<Code> codes = codeMapper.selectByCondition(c);
+        for (Code code : codes) {
+            List<CodeItem> itemList = new LinkedList<CodeItem>();
+            CodeItem param = new CodeItem();
+            param.setType(code.getCode());
+            List<CodeItem> items = codeItemMapper.select(param);
+            List<CodeItem> topItems = items.stream().filter(item -> 0 == item.getPid()).sorted()
+                    .collect(Collectors.toList());
+
+            makeCodeItems(itemList, topItems, items);
+
+            code.setItems(itemList);
+        }
+        return codes;
+    }
 
     /**
      * 递归收集编码项目
@@ -47,25 +66,6 @@ public class CodeService {
                 makeCodeItems(items, child, codeTtems);
             }
         }
-    }
-
-    public List<Code> codes() {
-        Condition c = new Condition(Code.class);
-        c.createCriteria().andEqualTo(AppConst.APPID_KEY, SessionManager.getAppid());
-        List<Code> codes = codeMapper.selectByCondition(c);
-        for (Code code : codes) {
-            List<CodeItem> itemList = new LinkedList<CodeItem>();
-            CodeItem param = new CodeItem();
-            param.setType(code.getCode());
-            List<CodeItem> items = codeItemMapper.select(param);
-            List<CodeItem> topItems = items.stream().filter(item -> 0 == item.getPid()).sorted()
-                    .collect(Collectors.toList());
-
-            makeCodeItems(itemList, topItems, items);
-
-            code.setItems(itemList);
-        }
-        return codes;
     }
 
 }

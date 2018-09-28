@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jyh.scm.base.AppConst;
@@ -58,8 +59,29 @@ public class WarehouseRest {
     }
 
     @GetMapping("/setDefault/{id}")
-    public ResponseEntity<Object> setDefault(@PathVariable("id") Integer id) {
+    public ResponseEntity<Object> setDefaultWarehouse(@PathVariable("id") Integer id) {
         warehouseService.setDefault(id);
+        return new ResponseEntity<Object>(HttpStatus.OK);
+    }
+
+    /**
+     * 启停仓库
+     * 
+     * @param id
+     * @param status
+     *            T开启|F停止
+     * @return
+     */
+    @GetMapping("/enable/{id}")
+    public ResponseEntity<Object> enableWarehouse(@PathVariable("id") Integer id,
+            @RequestParam("status") String status) {
+        Warehouse warehouse = new Warehouse();
+        warehouse.setId(id);
+        warehouse.setAppid(SessionManager.getAppid());
+        warehouse.setEnabled(status);
+        warehouse.setUpdatedBy(SessionManager.getAccount());
+        warehouse.setUpdatedTime(TimeUtil.getTime());
+        warehouseMapper.updateByPrimaryKeySelective(warehouse);
         return new ResponseEntity<Object>(HttpStatus.OK);
     }
 

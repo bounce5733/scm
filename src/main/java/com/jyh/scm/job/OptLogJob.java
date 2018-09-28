@@ -6,7 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.jyh.scm.base.CacheManager;
-import com.jyh.scm.dao.OptLogMapper;
+import com.jyh.scm.dao.sys.OptLogMapper;
 
 /**
  * 功能日志任务
@@ -18,14 +18,14 @@ import com.jyh.scm.dao.OptLogMapper;
 @EnableScheduling
 public class OptLogJob {
 
-	@Autowired
-	private OptLogMapper mapper;
+    @Autowired
+    private OptLogMapper mapper;
 
-	@Scheduled(cron = "* 0/2 * * * ? ")
-	public void handle() {
-		if (CacheManager.logCacheList.size() > 0) {
-			mapper.insertList(CacheManager.logCacheList);
-			CacheManager.logCacheList.clear();
-		}
-	}
+    @Scheduled(cron = "0 0/2 * * * ?")
+    public void handle() {
+        if (CacheManager.LOG_CACHE_LIST.size() > 0) {
+            mapper.insertList(CacheManager.LOG_CACHE_LIST);
+            CacheManager.LOG_CACHE_LIST.clear();
+        }
+    }
 }

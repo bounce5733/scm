@@ -31,7 +31,7 @@ import tk.mybatis.mapper.entity.Condition;
  * @date 2018年9月17日 下午7:56:53
  */
 @RestController
-@RequestMapping(path = "code/accountPeriods")
+@RequestMapping(path = "code/accountperiods")
 public class AccountPeriodRest {
 
     @Autowired
@@ -74,7 +74,7 @@ public class AccountPeriodRest {
     }
 
     @GetMapping("/moveTop/{id}")
-    public ResponseEntity<Object> moveTop(@PathVariable("id") Integer id) {
+    public ResponseEntity<Object> moveTopAccountPeriod(@PathVariable("id") Integer id) {
         accountPeriodService.moveTop(id);
         return new ResponseEntity<Object>(HttpStatus.OK);
     }

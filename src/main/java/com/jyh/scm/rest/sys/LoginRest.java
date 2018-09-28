@@ -1,4 +1,4 @@
-package com.jyh.scm.rest;
+package com.jyh.scm.rest.sys;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +16,9 @@ import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.CacheManager;
 import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.UserMapper;
-import com.jyh.scm.entity.OptLog;
 import com.jyh.scm.entity.User;
-import com.jyh.scm.service.SysService;
+import com.jyh.scm.entity.sys.OptLog;
+import com.jyh.scm.service.sys.LoginService;
 import com.jyh.scm.util.IDGenUtil;
 import com.jyh.scm.util.TimeUtil;
 
@@ -29,16 +29,16 @@ import com.jyh.scm.util.TimeUtil;
  * @date 2017年12月26日 下午12:01:23
  */
 @RestController
-@RequestMapping(path = "sys")
-public class SysRest {
+@RequestMapping(path = "sys/login")
+public class LoginRest {
 
     @Autowired
     private UserMapper userMapper;
 
     @Autowired
-    private SysService sysService;
+    private LoginService sysService;
 
-    @PostMapping("/login")
+    @PostMapping
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> userMap) {
         // 验证用户
         User param = new User();
@@ -72,7 +72,7 @@ public class SysRest {
         log.setCreatedBy(user.getAccount());
         log.setOptType("登录");
         log.setCreatedTime(TimeUtil.getTime());
-        CacheManager.logCacheList.add(log);
+        CacheManager.LOG_CACHE_LIST.add(log);
         return new ResponseEntity<Map<String, Object>>(rtnmsg, HttpStatus.OK);
     }
 
@@ -109,7 +109,7 @@ public class SysRest {
         log.setCreatedBy(SessionManager.getAccount());
         log.setOptType("注销");
         log.setCreatedTime(TimeUtil.getTime());
-        CacheManager.logCacheList.add(log);
+        CacheManager.LOG_CACHE_LIST.add(log);
         SessionManager.invaildSession();
         return new ResponseEntity<Object>(HttpStatus.OK);
     }

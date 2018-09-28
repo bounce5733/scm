@@ -1,4 +1,4 @@
-package com.jyh.scm.service;
+package com.jyh.scm.service.sys;
 
 import java.util.Map;
 
@@ -24,7 +24,7 @@ import com.jyh.scm.util.TimeUtil;
  * @date 2018年9月8日 下午3:09:33
  */
 @Service
-public class SysService {
+public class LoginService {
 
     @Autowired
     private UserMapper userMapper;

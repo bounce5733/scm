@@ -1,4 +1,4 @@
-package com.jyh.scm.rest;
+package com.jyh.scm.rest.sys;
 
 import java.io.IOException;
 
@@ -17,7 +17,7 @@ import com.jyh.scm.base.CacheManager;
 import com.jyh.scm.util.CodeUtil;
 
 @RestController
-@RequestMapping(path = "attachs")
+@RequestMapping(path = "sys/attachs")
 public class AttachRest {
 
     private static final Logger log = LoggerFactory.getLogger(AttachRest.class);

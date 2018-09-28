@@ -1,7 +1,8 @@
 package com.jyh.scm.entity.code;
 
-import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.jyh.scm.entity.BaseEntity;
 
 /**
  * 仓库
@@ -10,12 +11,9 @@ import javax.persistence.Table;
  * @date 2018年9月16日 下午8:11:19
  */
 @Table(name = "code_warehouse")
-public class Warehouse {
+public class Warehouse extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
-
-    @Id
-    private Integer id;
 
     private String code;
 
@@ -31,25 +29,9 @@ public class Warehouse {
     private String address;
 
     /**
-     * 是否禁用： T是|F否
+     * 是否开启： T是|F否
      */
-    private String disabled;
-
-    private String createdBy;// 创建人
-
-    private String createdTime;// 创建时间
-
-    private String updatedBy;// 更新人
-
-    private String updatedTime;// 更新时间
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    private String enabled;
 
     public String getCode() {
         return code;
@@ -91,48 +73,12 @@ public class Warehouse {
         this.address = address;
     }
 
-    public String getDisabled() {
-        return disabled;
+    public String getEnabled() {
+        return enabled;
     }
 
-    public void setDisabled(String disabled) {
-        this.disabled = disabled;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public String getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(String createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-    }
-
-    public String getUpdatedTime() {
-        return updatedTime;
-    }
-
-    public void setUpdatedTime(String updatedTime) {
-        this.updatedTime = updatedTime;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
+    public void setEnabled(String enabled) {
+        this.enabled = enabled;
     }
 
 }

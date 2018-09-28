@@ -1,9 +1,8 @@
 package com.jyh.scm.entity.bas;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.jyh.scm.entity.BaseEntity;
 
 /**
  * 公司信息
@@ -12,16 +11,9 @@ import javax.persistence.Table;
  * @date 2018年9月6日 下午10:35:22
  */
 @Table(name = "bas_company")
-public class Company {
+public class Company extends BaseEntity{
 
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    // 账套，母公司为0，其他为母公司ID
-    private Integer appid;
 
     private String name;
 
@@ -58,30 +50,6 @@ public class Company {
     private String linkmanQq;
 
     private String linkmanEmail;
-
-    private String createdBy;// 创建人
-
-    private String createdTime;// 创建时间
-
-    private String updatedBy;// 更新人
-
-    private String updatedTime;// 更新时间
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getAppid() {
-        return appid;
-    }
-
-    public void setAppid(Integer appid) {
-        this.appid = appid;
-    }
 
     public String getName() {
         return name;
@@ -225,42 +193,6 @@ public class Company {
 
     public void setLinkmanEmail(String linkmanEmail) {
         this.linkmanEmail = linkmanEmail;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public String getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(String createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-    }
-
-    public String getUpdatedTime() {
-        return updatedTime;
-    }
-
-    public void setUpdatedTime(String updatedTime) {
-        this.updatedTime = updatedTime;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
 }
