@@ -86,14 +86,13 @@ public class RoleService {
     }
 
     /**
-     * 用户菜单，去重
+     * 用户菜单，功能
      * 
      * @param userid
-     * @return
+     * @return {menu_key,[action_key]}
      */
     public Map<String, List<String>> userMenus(int userid) {
         List<Map<String, String>> points = roleMapper.userMenus(userid);
-        // 去除重复
         Map<String, List<String>> menus = new HashMap<String, List<String>>();
         points.forEach(point -> {
             String menuKey = point.get("menuKey");

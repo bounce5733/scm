@@ -22,6 +22,7 @@ import com.jyh.scm.base.CacheManager;
 import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.sys.CodeItemMapper;
 import com.jyh.scm.dao.sys.CodeMapper;
+import com.jyh.scm.entity.BaseCascaderCode;
 import com.jyh.scm.entity.sys.Code;
 import com.jyh.scm.entity.sys.CodeItem;
 import com.jyh.scm.service.sys.CodeService;
@@ -126,11 +127,16 @@ public class CodeRest {
                 cacheManager.loadSysPathCode().get(String.valueOf(SessionManager.getAppid())), HttpStatus.OK);
     }
 
-    @GetMapping("/productCatalogPathCode")
-    public ResponseEntity<Map<String, Map<String, Object>>> loadProductCatalogPathCode() {
-        return new ResponseEntity<Map<String, Map<String, Object>>>(
-                cacheManager.loadProductCatalogPathCode().get(String.valueOf(SessionManager.getAppid())),
-                HttpStatus.OK);
+    @GetMapping("/appCascadeCode")
+    public ResponseEntity<Map<String, List<BaseCascaderCode<?>>>> loadAppCascadeCode() {
+        return new ResponseEntity<Map<String, List<BaseCascaderCode<?>>>>(
+                cacheManager.loadAppCascadeCode().get(String.valueOf(SessionManager.getAppid())), HttpStatus.OK);
+    }
+
+    @GetMapping("/appCascadePathCode")
+    public ResponseEntity<Map<String, Map<String, Map<String, Object>>>> loadAppCascadePathCode() {
+        return new ResponseEntity<Map<String, Map<String, Map<String, Object>>>>(
+                cacheManager.loadAppCascadePathCode().get(String.valueOf(SessionManager.getAppid())), HttpStatus.OK);
     }
 
 }

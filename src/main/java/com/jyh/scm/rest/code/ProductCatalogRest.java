@@ -51,7 +51,7 @@ public class ProductCatalogRest {
         item.setCreatedBy(SessionManager.getAccount());
         item.setCreatedTime(TimeUtil.getTime());
         productCatalogMapper.insertSelective(item);
-        cacheManager.refreshProductCatalogPathCode();
+        cacheManager.refreshAppCascadeCode();
         return new ResponseEntity<Object>(HttpStatus.OK);
     }
 
@@ -60,14 +60,14 @@ public class ProductCatalogRest {
         item.setUpdatedBy(SessionManager.getAccount());
         item.setUpdatedTime(TimeUtil.getTime());
         productCatalogMapper.updateByPrimaryKeySelective(item);
-        cacheManager.refreshProductCatalogPathCode();
+        cacheManager.refreshAppCascadeCode();
         return new ResponseEntity<Object>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> removeProductCatalog(@PathVariable Integer id) {
         productCatalogMapper.deleteByPrimaryKey(id);
-        cacheManager.refreshProductCatalogPathCode();
+        cacheManager.refreshAppCascadeCode();
         return new ResponseEntity<Object>(HttpStatus.OK);
     }
 

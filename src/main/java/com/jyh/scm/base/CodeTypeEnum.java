@@ -8,12 +8,5 @@ package com.jyh.scm.base;
  */
 public enum CodeTypeEnum {
 
-    AccountPeriod("accountPeriod");
-
-    private CodeTypeEnum(String name) {
-    }
-
-    public String getName() {
-        return this.name();
-    }
+    accountPeriod, productCatalog;
 }
