@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.SessionManager;
-import com.jyh.scm.dao.code.AccountPeriodMapper;
-import com.jyh.scm.entity.code.AccountPeriod;
+import com.jyh.scm.dao.code.CustomerGradeMapper;
+import com.jyh.scm.entity.code.CustomerGrade;
 import com.jyh.scm.util.TimeUtil;
 
 import tk.mybatis.mapper.entity.Condition;
@@ -20,10 +20,10 @@ import tk.mybatis.mapper.entity.Condition;
  * @date 2018年3月5日 下午2:43:23
  */
 @Service
-public class AccountPeriodService {
+public class CustomerGradeService {
 
     @Autowired
-    private AccountPeriodMapper accountPeriodMapper;
+    private CustomerGradeMapper customerGradeMapper;
 
     /**
      * 置顶
@@ -33,20 +33,20 @@ public class AccountPeriodService {
      */
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
     public void moveTop(Integer id) {
-        AccountPeriod obj = new AccountPeriod();
+        CustomerGrade obj = new CustomerGrade();
         obj.setId(id);
         obj.setSort(0);
         obj.setUpdatedBy(SessionManager.getAccount());
         obj.setUpdatedTime(TimeUtil.getTime());
-        accountPeriodMapper.updateByPrimaryKeySelective(obj);
+        customerGradeMapper.updateByPrimaryKeySelective(obj);
 
         // 其余后置+1
-        Condition c = new Condition(AccountPeriod.class);
+        Condition c = new Condition(CustomerGrade.class);
         c.createCriteria().andEqualTo(AppConst.APPID_KEY, SessionManager.getAppid()).andNotEqualTo("id", id);
-        List<AccountPeriod> accountPeriods = accountPeriodMapper.selectByCondition(c);
-        accountPeriods.forEach(item -> {
+        List<CustomerGrade> customerGrades = customerGradeMapper.selectByCondition(c);
+        customerGrades.forEach(item -> {
             item.setSort(item.getSort() + 1);
-            accountPeriodMapper.updateByPrimaryKeySelective(item);
+            customerGradeMapper.updateByPrimaryKeySelective(item);
         });
 
     }

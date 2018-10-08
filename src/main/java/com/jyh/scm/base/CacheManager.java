@@ -23,15 +23,23 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.jyh.scm.dao.code.AccountPeriodMapper;
+import com.jyh.scm.dao.code.CustomerGradeMapper;
 import com.jyh.scm.dao.code.ProductCatalogMapper;
+import com.jyh.scm.dao.code.UnitMapper;
+import com.jyh.scm.dao.code.WarehouseMapper;
 import com.jyh.scm.dao.sys.CodeItemMapper;
 import com.jyh.scm.dao.sys.CodeMapper;
 import com.jyh.scm.entity.BaseCascaderCode;
 import com.jyh.scm.entity.code.AccountPeriod;
+import com.jyh.scm.entity.code.CustomerGrade;
 import com.jyh.scm.entity.code.ProductCatalog;
+import com.jyh.scm.entity.code.Unit;
+import com.jyh.scm.entity.code.Warehouse;
 import com.jyh.scm.entity.sys.Code;
 import com.jyh.scm.entity.sys.CodeItem;
 import com.jyh.scm.entity.sys.OptLog;
+
+import tk.mybatis.mapper.entity.Condition;
 
 @Configuration
 public class CacheManager {
@@ -49,6 +57,15 @@ public class CacheManager {
 
     @Autowired
     private AccountPeriodMapper accountPeriodMapper;
+
+    @Autowired
+    private UnitMapper unitMapper;
+
+    @Autowired
+    private CustomerGradeMapper customerGradeMapper;
+
+    @Autowired
+    private WarehouseMapper warehouseMapper;
 
     @Autowired
     private ProductCatalogMapper productCatalogMapper;
@@ -242,6 +259,51 @@ public class CacheManager {
                 item.put("name", code.getName());
                 appCodeMap.get(appid).get(CodeTypeEnum.accountPeriod.name()).add(item);
             });
+            List<Unit> unitList = unitMapper.selectAll();
+            unitList.forEach(code -> {
+                String appid = String.valueOf(code.getAppid());
+                if (appCodeMap.get(appid) == null) {
+                    appCodeMap.put(appid, new HashMap<String, List<Map<String, String>>>());
+                }
+                if (appCodeMap.get(appid).get(CodeTypeEnum.unit.name()) == null) {
+                    appCodeMap.get(appid).put(CodeTypeEnum.unit.name(), new ArrayList<Map<String, String>>());
+                }
+                Map<String, String> item = new HashMap<String, String>();
+                item.put("id", String.valueOf(code.getId()));
+                item.put("name", code.getName());
+                appCodeMap.get(appid).get(CodeTypeEnum.unit.name()).add(item);
+            });
+            Condition c = new Condition(Warehouse.class);
+            c.createCriteria().andEqualTo("enabled", "T");
+            List<Warehouse> warehouseList = warehouseMapper.selectByCondition(c);
+            warehouseList.forEach(code -> {
+                String appid = String.valueOf(code.getAppid());
+                if (appCodeMap.get(appid) == null) {
+                    appCodeMap.put(appid, new HashMap<String, List<Map<String, String>>>());
+                }
+                if (appCodeMap.get(appid).get(CodeTypeEnum.warehouse.name()) == null) {
+                    appCodeMap.get(appid).put(CodeTypeEnum.warehouse.name(), new ArrayList<Map<String, String>>());
+                }
+                Map<String, String> item = new HashMap<String, String>();
+                item.put("id", String.valueOf(code.getId()));
+                item.put("name", code.getName());
+                appCodeMap.get(appid).get(CodeTypeEnum.warehouse.name()).add(item);
+            });
+            c = new Condition(CustomerGrade.class);
+            List<CustomerGrade> customerGradeList = customerGradeMapper.selectAll();
+            customerGradeList.forEach(code -> {
+                String appid = String.valueOf(code.getAppid());
+                if (appCodeMap.get(appid) == null) {
+                    appCodeMap.put(appid, new HashMap<String, List<Map<String, String>>>());
+                }
+                if (appCodeMap.get(appid).get(CodeTypeEnum.customerGrade.name()) == null) {
+                    appCodeMap.get(appid).put(CodeTypeEnum.customerGrade.name(), new ArrayList<Map<String, String>>());
+                }
+                Map<String, String> item = new HashMap<String, String>();
+                item.put("id", String.valueOf(code.getId()));
+                item.put("name", code.getName());
+                appCodeMap.get(appid).get(CodeTypeEnum.customerGrade.name()).add(item);
+            });
         }
         return appCodeMap;
     }
@@ -265,13 +327,15 @@ public class CacheManager {
             });
             List<BaseCascaderCode<?>> topItems = items.stream().filter(item -> 0 == item.getPid()).sorted()
                     .collect(Collectors.toList());
-            makeAppCascadeCodeTree(topItems, baseItems);
-            // 为各条目添加主键路径
-            for (BaseCascaderCode<?> topItem : topItems) {
-                topItem.makePath(new LinkedList<Integer>());
+            if (topItems.size() > 0) {
+                makeAppCascadeCodeTree(topItems, baseItems);
+                // 为各条目添加主键路径
+                for (BaseCascaderCode<?> topItem : topItems) {
+                    topItem.makePath(new LinkedList<Integer>());
+                }
+                appItemMap.put(CodeTypeEnum.productCatalog.name(), topItems);
+                appCascadeCodeMap.put(String.valueOf(topItems.get(0).getAppid()), appItemMap);
             }
-            appItemMap.put(CodeTypeEnum.productCatalog.name(), topItems);
-            appCascadeCodeMap.put(String.valueOf(topItems.get(0).getAppid()), appItemMap);
         }
         return appCascadeCodeMap;
     }
@@ -290,21 +354,31 @@ public class CacheManager {
             List<ProductCatalog> items = productCatalogMapper.selectAll();
             List<ProductCatalog> topItemList = items.stream().filter(item -> 0 == item.getPid()).sorted()
                     .collect(Collectors.toList());
-            // 组装子项目
-            makeProductCatalogTree(topItemList, items);
-            // 组装主键路由
-            for (ProductCatalog data : topItemList) {
-                data.makePath(new LinkedList<Integer>());
-            }
-            Map<String, Map<String, Object>> itemPathMap = new HashMap<String, Map<String, Object>>();
-            topItemList.forEach(item -> {
-                makePathMap(itemPathMap, item);
-            });
-            if (appCascadePathCodeMap.get(String.valueOf(items.get(0).getAppid())) == null) {
-                appCascadePathCodeMap.put(String.valueOf(items.get(0).getAppid()),
-                        new HashMap<String, Map<String, Map<String, Object>>>());
-                appCascadePathCodeMap.get(String.valueOf(items.get(0).getAppid()))
-                        .put(CodeTypeEnum.productCatalog.name(), itemPathMap);
+            if (topItemList.size() > 0) {
+                // 组装子项目
+                makeProductCatalogTree(topItemList, items);
+                // 按应用分类
+                Map<String, List<ProductCatalog>> appTopItemMap = new HashMap<String, List<ProductCatalog>>();
+
+                // 组装主键路由
+                for (ProductCatalog data : topItemList) {
+                    data.makePath(new LinkedList<Integer>());
+                    if (appTopItemMap.get(String.valueOf(data.getAppid())) == null) {
+                        appTopItemMap.put(String.valueOf(data.getAppid()), new ArrayList<ProductCatalog>());
+                    }
+                    appTopItemMap.get(String.valueOf(data.getAppid())).add(data);
+                }
+
+                appTopItemMap.forEach((k, v) -> {
+                    Map<String, Map<String, Object>> itemPathMap = new HashMap<String, Map<String, Object>>();
+                    v.forEach(item -> {
+                        makePathMap(itemPathMap, item);
+                    });
+                    if (appCascadePathCodeMap.get(k) == null) {
+                        appCascadePathCodeMap.put(k, new HashMap<String, Map<String, Map<String, Object>>>());
+                        appCascadePathCodeMap.get(k).put(CodeTypeEnum.productCatalog.name(), itemPathMap);
+                    }
+                });
             }
         }
         return appCascadePathCodeMap;
@@ -378,14 +452,6 @@ public class CacheManager {
         appCascadePathCode.invalidateAll();
         this.loadAppCascadeCode();
         this.loadAppCascadePathCode();
-    }
-
-    /**
-     * 刷新应用商品级联分类路径缓存
-     */
-    public void refreshProductCatalogPathCode() {
-        appCascadePathCode.invalidateAll();
-        this.loadAppCascadeCode();
     }
 
     /**

@@ -6,11 +6,14 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.code.ProductCatalogMapper;
 import com.jyh.scm.entity.code.ProductCatalog;
+import com.jyh.scm.util.TimeUtil;
 
 import tk.mybatis.mapper.entity.Condition;
 
@@ -57,5 +60,30 @@ public class ProductCatalogService {
                 makeProductCatalogs(items, child, codeTtems);
             }
         }
+    }
+
+    /**
+     * 置顶
+     * 
+     * @param id
+     */
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+    public void moveTop(Integer id, Integer pid) {
+        ProductCatalog obj = new ProductCatalog();
+        obj.setId(id);
+        obj.setSort(0);
+        obj.setUpdatedBy(SessionManager.getAccount());
+        obj.setUpdatedTime(TimeUtil.getTime());
+        productCatalogMapper.updateByPrimaryKeySelective(obj);
+
+        // 当前层级其余后置+1
+        Condition c = new Condition(ProductCatalog.class);
+        c.createCriteria().andEqualTo(AppConst.APPID_KEY, SessionManager.getAppid()).andEqualTo("pid", pid)
+                .andNotEqualTo("id", id);
+        List<ProductCatalog> productCatalogs = productCatalogMapper.selectByCondition(c);
+        productCatalogs.forEach(item -> {
+            item.setSort(item.getSort() + 1);
+            productCatalogMapper.updateByPrimaryKeySelective(item);
+        });
     }
 }

@@ -15,4 +15,17 @@ public class ProductCatalog extends BaseCascaderCode<ProductCatalog> {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 是否默认商品分类： T是|F否
+     */
+    private String defaulted;
+
+    public String getDefaulted() {
+        return defaulted;
+    }
+
+    public void setDefaulted(String defaulted) {
+        this.defaulted = defaulted;
+    }
+
 }

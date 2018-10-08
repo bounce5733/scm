@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jyh.scm.base.CacheManager;
@@ -67,6 +68,14 @@ public class ProductCatalogRest {
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> removeProductCatalog(@PathVariable Integer id) {
         productCatalogMapper.deleteByPrimaryKey(id);
+        cacheManager.refreshAppCascadeCode();
+        return new ResponseEntity<Object>(HttpStatus.OK);
+    }
+
+    @GetMapping("/moveTop/{id}")
+    public ResponseEntity<Object> moveTopProductCatalog(@PathVariable("id") Integer id,
+            @RequestParam("pid") Integer pid) {
+        productCatalogService.moveTop(id, pid);
         cacheManager.refreshAppCascadeCode();
         return new ResponseEntity<Object>(HttpStatus.OK);
     }

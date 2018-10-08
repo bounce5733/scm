@@ -8,5 +8,5 @@ package com.jyh.scm.base;
  */
 public enum CodeTypeEnum {
 
-    accountPeriod, productCatalog;
+    accountPeriod, unit, warehouse, customerGrade, productCatalog;
 }

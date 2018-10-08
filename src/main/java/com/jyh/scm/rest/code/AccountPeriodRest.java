@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jyh.scm.base.AppConst;
+import com.jyh.scm.base.CacheManager;
 import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.code.AccountPeriodMapper;
 import com.jyh.scm.entity.code.AccountPeriod;
@@ -25,7 +26,7 @@ import com.jyh.scm.util.TimeUtil;
 import tk.mybatis.mapper.entity.Condition;
 
 /**
- * A
+ * 账期
  * 
  * @author jiangyonghua
  * @date 2018年9月17日 下午7:56:53
@@ -39,6 +40,9 @@ public class AccountPeriodRest {
 
     @Autowired
     private AccountPeriodService accountPeriodService;
+
+    @Autowired
+    private CacheManager cacheManager;
 
     @GetMapping
     public ResponseEntity<List<AccountPeriod>> loadAccountPeriod() {
@@ -56,8 +60,9 @@ public class AccountPeriodRest {
 
     @PatchMapping
     public ResponseEntity<Object> editAccountPeriod(@RequestBody AccountPeriod accountPeriod) {
-        return new ResponseEntity<Object>(accountPeriodMapper.updateByPrimaryKeySelective(accountPeriod),
-                HttpStatus.OK);
+        accountPeriodMapper.updateByPrimaryKeySelective(accountPeriod);
+        cacheManager.loadAppCode();
+        return new ResponseEntity<Object>(HttpStatus.OK);
     }
 
     @PostMapping
@@ -65,17 +70,22 @@ public class AccountPeriodRest {
         accountPeriod.setCreatedBy(SessionManager.getAccount());
         accountPeriod.setCreatedTime(TimeUtil.getTime());
         accountPeriod.setAppid(SessionManager.getAppid());
-        return new ResponseEntity<Object>(accountPeriodMapper.insertSelective(accountPeriod), HttpStatus.OK);
+        accountPeriodMapper.insertSelective(accountPeriod);
+        cacheManager.loadAppCode();
+        return new ResponseEntity<Object>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> removeAccountPeriod(@PathVariable("id") Integer id) {
-        return new ResponseEntity<Object>(accountPeriodMapper.deleteByPrimaryKey(id), HttpStatus.OK);
+        accountPeriodMapper.deleteByPrimaryKey(id);
+        cacheManager.loadAppCode();
+        return new ResponseEntity<Object>(HttpStatus.OK);
     }
 
     @GetMapping("/moveTop/{id}")
     public ResponseEntity<Object> moveTopAccountPeriod(@PathVariable("id") Integer id) {
         accountPeriodService.moveTop(id);
+        cacheManager.loadAppCode();
         return new ResponseEntity<Object>(HttpStatus.OK);
     }
 }

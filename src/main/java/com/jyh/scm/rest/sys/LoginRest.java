@@ -37,6 +37,9 @@ public class LoginRest {
 
     @Autowired
     private LoginService sysService;
+    
+    @Autowired
+    private CacheManager cacheManager;
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> userMap) {
@@ -90,6 +93,9 @@ public class LoginRest {
         } else if (flag == 2) {
             return new ResponseEntity<Object>(HttpStatus.IM_USED);
         } else {
+            // 刷新缓存
+            cacheManager.refreshAppCascadeCode();
+            cacheManager.refreshAppCode();
             return new ResponseEntity<Object>(HttpStatus.OK);
         }
     }

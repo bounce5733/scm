@@ -9,9 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.SessionManager;
-import com.jyh.scm.dao.code.WarehouseMapper;
+import com.jyh.scm.dao.code.UnitMapper;
 import com.jyh.scm.entity.code.Unit;
-import com.jyh.scm.entity.code.Warehouse;
 import com.jyh.scm.util.TimeUtil;
 
 import tk.mybatis.mapper.entity.Condition;
@@ -21,32 +20,10 @@ import tk.mybatis.mapper.entity.Condition;
  * @date 2018年3月5日 下午2:43:23
  */
 @Service
-public class WarehouseService {
+public class UnitService {
 
     @Autowired
-    private WarehouseMapper warehouseMapper;
-
-    /**
-     * 设置默认仓库
-     * 
-     * @param id
-     * @return
-     */
-    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
-    public void setDefault(Integer id) {
-        Warehouse warehouse = new Warehouse();
-        warehouse.setDefaulted("F");
-        Condition c = new Condition(Warehouse.class);
-        c.createCriteria().andEqualTo(AppConst.APPID_KEY, SessionManager.getAppid());
-        warehouseMapper.updateByConditionSelective(warehouse, c);
-
-        warehouse.setId(id);
-        warehouse.setDefaulted("T");
-        warehouse.setEnabled("T");
-        warehouse.setUpdatedBy(SessionManager.getAccount());
-        warehouse.setUpdatedTime(TimeUtil.getTime());
-        warehouseMapper.updateByPrimaryKeySelective(warehouse);
-    }
+    private UnitMapper unitMapper;
 
     /**
      * 置顶
@@ -56,20 +33,20 @@ public class WarehouseService {
      */
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
     public void moveTop(Integer id) {
-        Warehouse obj = new Warehouse();
+        Unit obj = new Unit();
         obj.setId(id);
         obj.setSort(0);
         obj.setUpdatedBy(SessionManager.getAccount());
         obj.setUpdatedTime(TimeUtil.getTime());
-        warehouseMapper.updateByPrimaryKeySelective(obj);
+        unitMapper.updateByPrimaryKeySelective(obj);
 
         // 其余后置+1
         Condition c = new Condition(Unit.class);
         c.createCriteria().andEqualTo(AppConst.APPID_KEY, SessionManager.getAppid()).andNotEqualTo("id", id);
-        List<Warehouse> units = warehouseMapper.selectByCondition(c);
+        List<Unit> units = unitMapper.selectByCondition(c);
         units.forEach(item -> {
             item.setSort(item.getSort() + 1);
-            warehouseMapper.updateByPrimaryKeySelective(item);
+            unitMapper.updateByPrimaryKeySelective(item);
         });
 
     }

@@ -1,5 +1,6 @@
 package com.jyh.scm.rest.code;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jyh.scm.base.AppConst;
+import com.jyh.scm.base.CacheManager;
 import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.code.WarehouseMapper;
 import com.jyh.scm.entity.code.Warehouse;
@@ -38,16 +40,28 @@ public class WarehouseRest {
     @Autowired
     private WarehouseService warehouseService;
 
+    @Autowired
+    private CacheManager cacheManager;
+
     @GetMapping
     public ResponseEntity<List<Warehouse>> loadWarehouse() {
         Condition c = new Condition(Warehouse.class);
         c.createCriteria().andEqualTo(AppConst.APPID_KEY, SessionManager.getAppid());
-        return new ResponseEntity<List<Warehouse>>(warehouseMapper.selectByCondition(c), HttpStatus.OK);
+        List<Warehouse> records = warehouseMapper.selectByCondition(c);
+        records.sort(new Comparator<Warehouse>() {
+            @Override
+            public int compare(Warehouse o1, Warehouse o2) {
+                return o1.getSort() > o2.getSort() ? 1 : o1.getSort() < o2.getSort() ? -1 : 0;
+            }
+        });
+        return new ResponseEntity<List<Warehouse>>(records, HttpStatus.OK);
     }
 
     @PatchMapping
     public ResponseEntity<Object> editWarehouse(@RequestBody Warehouse warehouse) {
-        return new ResponseEntity<Object>(warehouseMapper.updateByPrimaryKeySelective(warehouse), HttpStatus.OK);
+        warehouseMapper.updateByPrimaryKeySelective(warehouse);
+        cacheManager.refreshAppCode();
+        return new ResponseEntity<Object>(HttpStatus.OK);
     }
 
     @PostMapping
@@ -55,6 +69,7 @@ public class WarehouseRest {
         warehouse.setCreatedBy(SessionManager.getAccount());
         warehouse.setCreatedTime(TimeUtil.getTime());
         warehouse.setAppid(SessionManager.getAppid());
+        cacheManager.refreshAppCode();
         return new ResponseEntity<Object>(warehouseMapper.insertSelective(warehouse), HttpStatus.OK);
     }
 
@@ -82,11 +97,21 @@ public class WarehouseRest {
         warehouse.setUpdatedBy(SessionManager.getAccount());
         warehouse.setUpdatedTime(TimeUtil.getTime());
         warehouseMapper.updateByPrimaryKeySelective(warehouse);
+        cacheManager.refreshAppCode();
         return new ResponseEntity<Object>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> removeWarehouse(@PathVariable("id") Integer id) {
-        return new ResponseEntity<Object>(warehouseMapper.deleteByPrimaryKey(id), HttpStatus.OK);
+        warehouseMapper.deleteByPrimaryKey(id);
+        cacheManager.refreshAppCode();
+        return new ResponseEntity<Object>(HttpStatus.OK);
+    }
+
+    @GetMapping("/moveTop/{id}")
+    public ResponseEntity<Object> moveTopWarehouse(@PathVariable("id") Integer id) {
+        warehouseService.moveTop(id);
+        cacheManager.refreshAppCode();
+        return new ResponseEntity<Object>(HttpStatus.OK);
     }
 }

@@ -40,8 +40,14 @@ public class AppConst {
     
     public static final String DEFAULT_WAREHOUSE_NAME = "默认仓";
     
+    //------默认商品分类------
+    public static final String DEFAULT_PRODUCT_CATALOG_NAME = "通用";
+    
+    //------默认客户级别------
+    public static final String DEFAULT_CUSTOMER_GRADE_NAME = "普通";
+    
     static {
         AUTH_SKIP_URI.add("/sys/login");
-        AUTH_SKIP_URI.add("/sys/register");
+        AUTH_SKIP_URI.add("/sys/login/register");
     }
 }

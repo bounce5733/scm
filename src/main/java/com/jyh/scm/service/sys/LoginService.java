@@ -11,8 +11,13 @@ import com.jyh.scm.base.AppConst;
 import com.jyh.scm.dao.RoleMapper;
 import com.jyh.scm.dao.UserMapper;
 import com.jyh.scm.dao.bas.CompanyMapper;
+import com.jyh.scm.dao.code.CustomerGradeMapper;
+import com.jyh.scm.dao.code.ProductCatalogMapper;
+import com.jyh.scm.dao.code.WarehouseMapper;
 import com.jyh.scm.entity.User;
 import com.jyh.scm.entity.bas.Company;
+import com.jyh.scm.entity.code.CustomerGrade;
+import com.jyh.scm.entity.code.ProductCatalog;
 import com.jyh.scm.entity.code.Warehouse;
 import com.jyh.scm.util.CodeUtil;
 import com.jyh.scm.util.TimeUtil;
@@ -31,6 +36,15 @@ public class LoginService {
 
     @Autowired
     private CompanyMapper companyMapper;
+
+    @Autowired
+    private WarehouseMapper warehouseMapper;
+
+    @Autowired
+    private CustomerGradeMapper customerGradeMapper;
+
+    @Autowired
+    private ProductCatalogMapper productCatalogMapper;
 
     @Autowired
     private RoleMapper roleMapper;
@@ -86,11 +100,32 @@ public class LoginService {
 
         // 创建默认仓库
         Warehouse warehouse = new Warehouse();
+        warehouse.setAppid(companyid);
         warehouse.setCode(AppConst.DEFAULT_WAREHOUSE_CODE);
         warehouse.setName(AppConst.DEFAULT_WAREHOUSE_NAME);
         warehouse.setDefaulted("T");
         warehouse.setCreatedBy(registerInfo.get("account"));
         warehouse.setCreatedTime(TimeUtil.getTime());
+        warehouseMapper.insertSelective(warehouse);
+
+        // 创建默认商品分类
+        ProductCatalog productCatalog = new ProductCatalog();
+        productCatalog.setAppid(companyid);
+        productCatalog.setName(AppConst.DEFAULT_PRODUCT_CATALOG_NAME);
+        productCatalog.setDefaulted("T");
+        productCatalog.setCreatedBy(registerInfo.get("account"));
+        productCatalog.setCreatedTime(TimeUtil.getTime());
+        productCatalogMapper.insertSelective(productCatalog);
+
+        // 创建默认客户级别
+        CustomerGrade customerGrade = new CustomerGrade();
+        customerGrade.setAppid(companyid);
+        customerGrade.setName(AppConst.DEFAULT_CUSTOMER_GRADE_NAME);
+        customerGrade.setDefaulted("T");
+        customerGrade.setDiscount(100f);
+        customerGrade.setCreatedBy(registerInfo.get("account"));
+        customerGrade.setCreatedTime(TimeUtil.getTime());
+        customerGradeMapper.insertSelective(customerGrade);
 
         // 授权超级管理员
         roleMapper.assignUser(AppConst.SUPER_ADMIN_ROLEID, user.getId());
