@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jyh.scm.base.CacheManager;
@@ -107,6 +108,14 @@ public class CodeRest {
                 return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
+    }
+    
+    @GetMapping("/moveTopCodeItem/{id}")
+    public ResponseEntity<Object> moveTopCodeItem(@PathVariable("id") Integer id,
+            @RequestParam("pid") Integer pid) {
+        service.moveTopCodeItem(id, pid);
+        cacheManager.refreshSysCode();
+        return new ResponseEntity<Object>(HttpStatus.OK);
     }
 
     @GetMapping("/appCode")

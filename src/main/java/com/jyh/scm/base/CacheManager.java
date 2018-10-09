@@ -309,33 +309,48 @@ public class CacheManager {
     }
 
     /**
-     * 加载应用字典级联缓存{appid:<type:[BaseCascaderCode]>}
+     * 加载应用字典级联缓存{appid:{type:[BaseCascaderCode]}}
      * 
      */
     @PostConstruct
     public Map<String, Map<String, List<BaseCascaderCode<?>>>> loadAppCascadeCode() {
         ConcurrentMap<String, Map<String, List<BaseCascaderCode<?>>>> appCascadeCodeMap = appCascadeCode.asMap();
         if (appCascadeCodeMap == null || appCascadeCodeMap.isEmpty()) {
-            Map<String, List<BaseCascaderCode<?>>> appItemMap = new HashMap<String, List<BaseCascaderCode<?>>>();
-            log.info("加载应用级联缓存{appid:<type:[BaseCascaderCode]>}...");
+            log.info("加载应用级联缓存{appid:{type:[BaseCascaderCode]}}...");
             // 商品类型
             List<ProductCatalog> items = productCatalogMapper.selectAll();
-            // 转换为基础类型
-            final List<BaseCascaderCode<?>> baseItems = new ArrayList<BaseCascaderCode<?>>();
+            Map<String, Map<String, List<BaseCascaderCode<?>>>> tempAppCascadeCodeMap = new HashMap<String, Map<String, List<BaseCascaderCode<?>>>>();
+            // 按应用分类，并转为泛型
             items.forEach(item -> {
-                baseItems.add(item);
-            });
-            List<BaseCascaderCode<?>> topItems = items.stream().filter(item -> 0 == item.getPid()).sorted()
-                    .collect(Collectors.toList());
-            if (topItems.size() > 0) {
-                makeAppCascadeCodeTree(topItems, baseItems);
-                // 为各条目添加主键路径
-                for (BaseCascaderCode<?> topItem : topItems) {
-                    topItem.makePath(new LinkedList<Integer>());
+                if (tempAppCascadeCodeMap.get(String.valueOf(item.getAppid())) == null) {
+                    tempAppCascadeCodeMap.put(String.valueOf(item.getAppid()),
+                            new HashMap<String, List<BaseCascaderCode<?>>>());
                 }
-                appItemMap.put(CodeTypeEnum.productCatalog.name(), topItems);
-                appCascadeCodeMap.put(String.valueOf(topItems.get(0).getAppid()), appItemMap);
-            }
+                if (tempAppCascadeCodeMap.get(String.valueOf(item.getAppid()))
+                        .get(CodeTypeEnum.productCatalog.name()) == null) {
+                    tempAppCascadeCodeMap.get(String.valueOf(item.getAppid())).put(CodeTypeEnum.productCatalog.name(),
+                            new ArrayList<BaseCascaderCode<?>>());
+                }
+                tempAppCascadeCodeMap.get(String.valueOf(item.getAppid())).get(CodeTypeEnum.productCatalog.name())
+                        .add(item);
+            });
+
+            tempAppCascadeCodeMap.forEach((appid, itemMap) -> {
+                itemMap.forEach((type, itemList) -> {
+                    List<BaseCascaderCode<?>> topItems = itemList.stream().filter(item -> 0 == item.getPid()).sorted()
+                            .collect(Collectors.toList());
+                    makeAppCascadeCodeTree(topItems, itemList);
+                    // 为各条目添加主键路径
+                    for (BaseCascaderCode<?> topItem : topItems) {
+                        topItem.makePath(new LinkedList<Integer>());
+                    }
+                    if (appCascadeCodeMap.get(appid) == null) {
+                        appCascadeCodeMap.put(appid, new HashMap<String, List<BaseCascaderCode<?>>>());
+                    }
+                    appCascadeCodeMap.get(appid).put(CodeTypeEnum.productCatalog.name(), topItems);
+                });
+
+            });
         }
         return appCascadeCodeMap;
     }

@@ -42,27 +42,6 @@ public class ProductCatalogService {
     }
 
     /**
-     * 递归收集编码项目
-     * 
-     * @param pItems
-     *            编码父项目列表
-     * @param codeTtems
-     *            编码项目列表
-     */
-    private static void makeProductCatalogs(List<ProductCatalog> items, List<ProductCatalog> pItems,
-            List<ProductCatalog> codeTtems) {
-        for (ProductCatalog pItem : pItems) {
-            items.add(pItem);
-            // 收集下级子项目
-            List<ProductCatalog> child = codeTtems.stream().filter(item -> item.getPid() == pItem.getId()).sorted()
-                    .collect(Collectors.toList());
-            if (child.size() > 0) {
-                makeProductCatalogs(items, child, codeTtems);
-            }
-        }
-    }
-
-    /**
      * 置顶
      * 
      * @param id
@@ -85,5 +64,26 @@ public class ProductCatalogService {
             item.setSort(item.getSort() + 1);
             productCatalogMapper.updateByPrimaryKeySelective(item);
         });
+    }
+
+    /**
+     * 递归收集编码项目
+     * 
+     * @param pItems
+     *            编码父项目列表
+     * @param codeTtems
+     *            编码项目列表
+     */
+    private static void makeProductCatalogs(List<ProductCatalog> items, List<ProductCatalog> pItems,
+            List<ProductCatalog> codeTtems) {
+        for (ProductCatalog pItem : pItems) {
+            items.add(pItem);
+            // 收集下级子项目
+            List<ProductCatalog> child = codeTtems.stream().filter(item -> item.getPid() == pItem.getId()).sorted()
+                    .collect(Collectors.toList());
+            if (child.size() > 0) {
+                makeProductCatalogs(items, child, codeTtems);
+            }
+        }
     }
 }
