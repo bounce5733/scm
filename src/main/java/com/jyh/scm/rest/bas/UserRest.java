@@ -1,4 +1,4 @@
-package com.jyh.scm.rest;
+package com.jyh.scm.rest.bas;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.SessionManager;
-import com.jyh.scm.dao.UserMapper;
-import com.jyh.scm.entity.User;
-import com.jyh.scm.service.RoleService;
-import com.jyh.scm.service.UserService;
+import com.jyh.scm.constant.AppConst;
+import com.jyh.scm.dao.bas.UserMapper;
+import com.jyh.scm.entity.bas.User;
+import com.jyh.scm.service.bas.RoleService;
+import com.jyh.scm.service.bas.UserService;
 import com.jyh.scm.util.TimeUtil;
 
 /**
@@ -33,7 +33,7 @@ import com.jyh.scm.util.TimeUtil;
  * @date 2018年1月7日 下午10:43:57
  */
 @RestController
-@RequestMapping(path = "users")
+@RequestMapping(path = "bas/users")
 public class UserRest {
 
     @Autowired

@@ -1,4 +1,4 @@
-package com.jyh.scm.rest.sys;
+package com.jyh.scm.rest.console;
 
 import java.util.List;
 import java.util.Map;
@@ -21,12 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jyh.scm.base.CacheManager;
 import com.jyh.scm.base.SessionManager;
-import com.jyh.scm.dao.sys.CodeItemMapper;
-import com.jyh.scm.dao.sys.CodeMapper;
+import com.jyh.scm.dao.console.CodeItemMapper;
+import com.jyh.scm.dao.console.CodeMapper;
 import com.jyh.scm.entity.BaseCascaderCode;
-import com.jyh.scm.entity.sys.Code;
-import com.jyh.scm.entity.sys.CodeItem;
-import com.jyh.scm.service.sys.CodeService;
+import com.jyh.scm.entity.console.Code;
+import com.jyh.scm.entity.console.CodeItem;
+import com.jyh.scm.service.console.CodeService;
 import com.jyh.scm.util.TimeUtil;
 
 /**
@@ -60,9 +60,6 @@ public class CodeRest {
 
     @PostMapping
     public ResponseEntity<Object> addCode(@RequestBody Code code) {
-        code.setAppid(SessionManager.getAppid());
-        code.setCreatedBy(SessionManager.getAccount());
-        code.setCreatedTime(TimeUtil.getTime());
         codeMapper.insertSelective(code);
         cacheManager.refreshSysCode();
         return new ResponseEntity<Object>(HttpStatus.OK);
@@ -109,10 +106,9 @@ public class CodeRest {
             }
         }
     }
-    
+
     @GetMapping("/moveTopCodeItem/{id}")
-    public ResponseEntity<Object> moveTopCodeItem(@PathVariable("id") Integer id,
-            @RequestParam("pid") Integer pid) {
+    public ResponseEntity<Object> moveTopCodeItem(@PathVariable("id") Integer id, @RequestParam("pid") Integer pid) {
         service.moveTopCodeItem(id, pid);
         cacheManager.refreshSysCode();
         return new ResponseEntity<Object>(HttpStatus.OK);
@@ -126,14 +122,12 @@ public class CodeRest {
 
     @GetMapping("/sysCode")
     public ResponseEntity<Map<String, List<CodeItem>>> loadSysCode() {
-        return new ResponseEntity<Map<String, List<CodeItem>>>(
-                cacheManager.loadSysCode().get(String.valueOf(SessionManager.getAppid())), HttpStatus.OK);
+        return new ResponseEntity<Map<String, List<CodeItem>>>(cacheManager.loadSysCode(), HttpStatus.OK);
     }
 
     @GetMapping("/sysPathCode")
     public ResponseEntity<Map<String, Map<String, Object>>> loadSysPathCode() {
-        return new ResponseEntity<Map<String, Map<String, Object>>>(
-                cacheManager.loadSysPathCode().get(String.valueOf(SessionManager.getAppid())), HttpStatus.OK);
+        return new ResponseEntity<Map<String, Map<String, Object>>>(cacheManager.loadSysPathCode(), HttpStatus.OK);
     }
 
     @GetMapping("/appCascadeCode")

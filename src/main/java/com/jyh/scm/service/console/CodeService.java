@@ -1,4 +1,4 @@
-package com.jyh.scm.service.sys;
+package com.jyh.scm.service.console;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.SessionManager;
-import com.jyh.scm.dao.sys.CodeItemMapper;
-import com.jyh.scm.dao.sys.CodeMapper;
+import com.jyh.scm.constant.AppConst;
+import com.jyh.scm.dao.console.CodeItemMapper;
+import com.jyh.scm.dao.console.CodeMapper;
 import com.jyh.scm.entity.code.ProductCatalog;
-import com.jyh.scm.entity.sys.Code;
-import com.jyh.scm.entity.sys.CodeItem;
+import com.jyh.scm.entity.console.Code;
+import com.jyh.scm.entity.console.CodeItem;
 import com.jyh.scm.util.TimeUtil;
 
 import tk.mybatis.mapper.entity.Condition;

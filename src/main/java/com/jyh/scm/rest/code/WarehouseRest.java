@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.CacheManager;
 import com.jyh.scm.base.SessionManager;
+import com.jyh.scm.constant.AppConst;
 import com.jyh.scm.dao.code.WarehouseMapper;
 import com.jyh.scm.entity.code.Warehouse;
 import com.jyh.scm.service.code.WarehouseService;

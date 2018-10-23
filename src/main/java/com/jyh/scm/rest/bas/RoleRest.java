@@ -1,6 +1,6 @@
-package com.jyh.scm.rest;
+package com.jyh.scm.rest.bas;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.SessionManager;
-import com.jyh.scm.dao.RoleMapper;
-import com.jyh.scm.entity.Role;
-import com.jyh.scm.entity.User;
-import com.jyh.scm.service.RoleService;
+import com.jyh.scm.constant.AppConst;
+import com.jyh.scm.dao.bas.RoleMapper;
+import com.jyh.scm.entity.bas.Role;
+import com.jyh.scm.entity.bas.User;
+import com.jyh.scm.service.bas.RoleService;
 import com.jyh.scm.util.TimeUtil;
 
 import tk.mybatis.mapper.entity.Condition;
@@ -34,7 +34,7 @@ import tk.mybatis.mapper.entity.Condition;
  * @date 2018年1月7日 下午10:43:57
  */
 @RestController
-@RequestMapping(path = "roles")
+@RequestMapping(path = "bas/roles")
 public class RoleRest {
 
     @Autowired
@@ -92,13 +92,19 @@ public class RoleRest {
     @GetMapping
     public ResponseEntity<List<Role>> loadRole() {
         Condition c = new Condition(User.class);
-        c.createCriteria().andEqualTo(AppConst.APPID_KEY, SessionManager.getAppid());
-        List<Role> allRoles = new ArrayList<Role>();
-        Role superRole = roleMapper.selectByPrimaryKey(AppConst.SUPER_ADMIN_ROLEID);
-        allRoles.add(superRole);
+        c.createCriteria().andEqualTo(AppConst.APPID_KEY, SessionManager.getAppid()).andNotEqualTo("id",
+                AppConst.SUPER_ADMIN_ROLEID);
+
         List<Role> roles = roleMapper.selectByCondition(c);
-        allRoles.addAll(roles);
-        return new ResponseEntity<List<Role>>(allRoles, HttpStatus.OK);
+        // 排序
+        roles.stream().sorted(new Comparator<Role>() {
+
+            @Override
+            public int compare(Role o1, Role o2) {
+                return o1.getSort() - o2.getSort();
+            }
+        });
+        return new ResponseEntity<List<Role>>(roles, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

@@ -1,4 +1,4 @@
-package com.jyh.scm.base;
+package com.jyh.scm.constant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +11,14 @@ public class AppConst {
 
     public static final String ENCODING = "UTF-8";
 
-    public static final String APPID = "scm";
+    public static final String SUPER_APPID = "0";
     
     public static final String APPID_KEY = "appid";
 
     public static final String SYS_DEFAULT_PWD = "c6f057b86584942e415435ffb1fa93d4";
-
+    
+    public static final int SUPER_COMPANY_ID = 0;
+    
     public static final int SUPER_ADMIN_ROLEID = 0;
 
     public static final String BASE_PACKAGE = "com.jyh.scm";// 项目基础包名称，根据自己公司的项目修改
@@ -42,6 +44,9 @@ public class AppConst {
     
     //------默认商品分类------
     public static final String DEFAULT_PRODUCT_CATALOG_NAME = "通用";
+    
+  //------默认部门------
+    public static final String DEFAULT_DEPT_NAME = "总部";
     
     //------默认客户级别------
     public static final String DEFAULT_CUSTOMER_GRADE_NAME = "普通";

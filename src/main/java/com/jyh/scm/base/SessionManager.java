@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.jyh.scm.constant.AppConst;
 
 @Configuration
 public class SessionManager {

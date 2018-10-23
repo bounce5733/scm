@@ -14,6 +14,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
 import com.github.pagehelper.PageInterceptor;
+import com.jyh.scm.constant.AppConst;
 
 import tk.mybatis.spring.mapper.MapperScannerConfigurer;
 

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.SessionManager;
+import com.jyh.scm.constant.AppConst;
 import com.jyh.scm.dao.code.UnitMapper;
 import com.jyh.scm.entity.code.Unit;
 import com.jyh.scm.util.TimeUtil;

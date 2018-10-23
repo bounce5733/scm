@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.CacheManager;
 import com.jyh.scm.base.SessionManager;
-import com.jyh.scm.dao.UserMapper;
-import com.jyh.scm.entity.User;
+import com.jyh.scm.constant.AppConst;
+import com.jyh.scm.dao.bas.UserMapper;
+import com.jyh.scm.entity.bas.User;
 import com.jyh.scm.entity.sys.OptLog;
 import com.jyh.scm.service.sys.LoginService;
 import com.jyh.scm.util.IDGenUtil;

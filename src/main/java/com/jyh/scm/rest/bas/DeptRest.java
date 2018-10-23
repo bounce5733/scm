@@ -1,4 +1,4 @@
-package com.jyh.scm.rest.code;
+package com.jyh.scm.rest.bas;
 
 import java.util.List;
 
@@ -17,65 +17,65 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jyh.scm.base.CacheManager;
 import com.jyh.scm.base.SessionManager;
-import com.jyh.scm.dao.code.ProductCatalogMapper;
-import com.jyh.scm.entity.code.ProductCatalog;
-import com.jyh.scm.service.code.ProductCatalogService;
+import com.jyh.scm.dao.bas.DeptMapper;
+import com.jyh.scm.entity.bas.Dept;
+import com.jyh.scm.service.bas.DeptService;
 import com.jyh.scm.util.TimeUtil;
 
 /**
- * 商品分类API
+ * 部门API
  * 
  * @author jiangyonghua
  * @date 2017年12月27日 下午4:17:33
  */
 @RestController
-@RequestMapping(path = "code/productCatalogs")
-public class ProductCatalogRest {
+@RequestMapping(path = "bas/depts")
+public class DeptRest {
 
     @Autowired
-    private ProductCatalogMapper productCatalogMapper;
+    private DeptMapper deptMapper;
 
     @Autowired
-    private ProductCatalogService productCatalogService;
+    private DeptService deptService;
 
     @Autowired
     private CacheManager cacheManager;
 
     @GetMapping
-    public ResponseEntity<List<ProductCatalog>> loadProductCatalog() {
-        return new ResponseEntity<List<ProductCatalog>>(productCatalogService.load(), HttpStatus.OK);
+    public ResponseEntity<List<Dept>> loadDept() {
+        return new ResponseEntity<List<Dept>>(deptService.load(), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<Object> addProductCatalog(@RequestBody ProductCatalog item) {
+    public ResponseEntity<Object> addDept(@RequestBody Dept item) {
         item.setAppid(SessionManager.getAppid());
         item.setCreatedBy(SessionManager.getAccount());
         item.setCreatedTime(TimeUtil.getTime());
-        productCatalogMapper.insertSelective(item);
+        deptMapper.insertSelective(item);
         cacheManager.refreshAppCascadeCode();
         return new ResponseEntity<Object>(HttpStatus.OK);
     }
 
     @PatchMapping
-    public ResponseEntity<Object> editProductCatalog(@RequestBody ProductCatalog item) {
+    public ResponseEntity<Object> editDept(@RequestBody Dept item) {
         item.setUpdatedBy(SessionManager.getAccount());
         item.setUpdatedTime(TimeUtil.getTime());
-        productCatalogMapper.updateByPrimaryKeySelective(item);
+        deptMapper.updateByPrimaryKeySelective(item);
         cacheManager.refreshAppCascadeCode();
         return new ResponseEntity<Object>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> removeProductCatalog(@PathVariable Integer id) {
-        productCatalogMapper.deleteByPrimaryKey(id);
+    public ResponseEntity<Object> removeDept(@PathVariable Integer id) {
+        deptMapper.deleteByPrimaryKey(id);
         cacheManager.refreshAppCascadeCode();
         return new ResponseEntity<Object>(HttpStatus.OK);
     }
 
     @GetMapping("/moveTop/{id}")
-    public ResponseEntity<Object> moveTopProductCatalog(@PathVariable("id") Integer id,
+    public ResponseEntity<Object> moveTopDept(@PathVariable("id") Integer id,
             @RequestParam("pid") Integer pid) {
-        productCatalogService.moveTop(id, pid);
+        deptService.moveTop(id, pid);
         cacheManager.refreshAppCascadeCode();
         return new ResponseEntity<Object>(HttpStatus.OK);
     }

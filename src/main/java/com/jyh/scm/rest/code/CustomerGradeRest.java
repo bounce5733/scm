@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.CacheManager;
 import com.jyh.scm.base.SessionManager;
+import com.jyh.scm.constant.AppConst;
 import com.jyh.scm.dao.code.CustomerGradeMapper;
 import com.jyh.scm.entity.code.CustomerGrade;
 import com.jyh.scm.service.code.CustomerGradeService;
@@ -32,7 +32,7 @@ import tk.mybatis.mapper.entity.Condition;
  * @date 2018年9月17日 下午7:56:53
  */
 @RestController
-@RequestMapping(path = "code/customergrades")
+@RequestMapping(path = "code/customerGrades")
 public class CustomerGradeRest {
 
     @Autowired

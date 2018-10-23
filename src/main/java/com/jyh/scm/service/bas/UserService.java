@@ -1,4 +1,4 @@
-package com.jyh.scm.service;
+package com.jyh.scm.service.bas;
 
 import java.util.List;
 
@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.SessionManager;
-import com.jyh.scm.dao.RoleMapper;
-import com.jyh.scm.dao.UserMapper;
-import com.jyh.scm.entity.User;
+import com.jyh.scm.constant.AppConst;
+import com.jyh.scm.dao.bas.RoleMapper;
+import com.jyh.scm.dao.bas.UserMapper;
+import com.jyh.scm.entity.bas.User;
 
 import tk.mybatis.mapper.entity.Condition;
 

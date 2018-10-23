@@ -1,4 +1,4 @@
-package com.jyh.scm.entity.sys;
+package com.jyh.scm.entity.console;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,36 +20,14 @@ public class Code {
 
     @Id
     private String code;
-
-    private Integer appid;
-
+    
     private String name;
-
-    private String createdBy;
-
-    private String createdTime;
 
     @Transient
     private List<CodeItem> items = new ArrayList<CodeItem>();
 
-    public Integer getAppid() {
-        return appid;
-    }
-
-    public void setAppid(Integer appid) {
-        this.appid = appid;
-    }
-
     public String getCode() {
         return code;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public String getCreatedTime() {
-        return createdTime;
     }
 
     public List<CodeItem> getItems() {
@@ -62,14 +40,6 @@ public class Code {
 
     public void setCode(String code) {
         this.code = code;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public void setCreatedTime(String createdTime) {
-        this.createdTime = createdTime;
     }
 
     public void setItems(List<CodeItem> items) {

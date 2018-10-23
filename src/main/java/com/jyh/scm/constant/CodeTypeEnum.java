@@ -1,4 +1,4 @@
-package com.jyh.scm.base;
+package com.jyh.scm.constant;
 
 /**
  * 系统二维字典类型
@@ -8,5 +8,5 @@ package com.jyh.scm.base;
  */
 public enum CodeTypeEnum {
 
-    accountPeriod, unit, warehouse, customerGrade, productCatalog;
+    accountPeriod, unit, warehouse, customerGrade, productCatalog, dept;
 }

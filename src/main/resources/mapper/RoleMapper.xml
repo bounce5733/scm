@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jyh.scm.dao.RoleMapper">
+<mapper namespace="com.jyh.scm.dao.bas.RoleMapper">
 	
 	<insert id="assignMenu">
 		INSERT INTO sys_role_menu (role_id,menu_key,action_key) VALUES

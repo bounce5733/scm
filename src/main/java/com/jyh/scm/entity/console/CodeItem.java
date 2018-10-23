@@ -1,4 +1,4 @@
-package com.jyh.scm.entity.sys;
+package com.jyh.scm.entity.console;
 
 import javax.persistence.Table;
 

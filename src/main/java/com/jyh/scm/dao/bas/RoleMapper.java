@@ -1,4 +1,4 @@
-package com.jyh.scm.dao;
+package com.jyh.scm.dao.bas;
 
 import java.util.List;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 
 import com.jyh.scm.base.Mapper;
-import com.jyh.scm.entity.Role;
+import com.jyh.scm.entity.bas.Role;
 
 public interface RoleMapper extends Mapper<Role> {
 

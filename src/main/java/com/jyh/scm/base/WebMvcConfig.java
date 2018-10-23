@@ -17,6 +17,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.jyh.scm.constant.AppConst;
 
 /**
  * Spring MVC 配置
@@ -70,7 +71,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 SerializerFeature.WriteNullStringAsEmpty, // String null -> ""
                 SerializerFeature.WriteNullNumberAsZero);// Number null -> 0
         converter.setFastJsonConfig(config);
-        converter.setDefaultCharset(Charset.forName("UTF-8"));
+        converter.setDefaultCharset(Charset.forName(AppConst.ENCODING));
         converters.add(converter);
     }
 

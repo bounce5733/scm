@@ -22,21 +22,24 @@ import org.springframework.context.annotation.Configuration;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.jyh.scm.constant.CodeTypeEnum;
+import com.jyh.scm.dao.bas.DeptMapper;
 import com.jyh.scm.dao.code.AccountPeriodMapper;
 import com.jyh.scm.dao.code.CustomerGradeMapper;
 import com.jyh.scm.dao.code.ProductCatalogMapper;
 import com.jyh.scm.dao.code.UnitMapper;
 import com.jyh.scm.dao.code.WarehouseMapper;
-import com.jyh.scm.dao.sys.CodeItemMapper;
-import com.jyh.scm.dao.sys.CodeMapper;
+import com.jyh.scm.dao.console.CodeItemMapper;
+import com.jyh.scm.dao.console.CodeMapper;
 import com.jyh.scm.entity.BaseCascaderCode;
+import com.jyh.scm.entity.bas.Dept;
 import com.jyh.scm.entity.code.AccountPeriod;
 import com.jyh.scm.entity.code.CustomerGrade;
 import com.jyh.scm.entity.code.ProductCatalog;
 import com.jyh.scm.entity.code.Unit;
 import com.jyh.scm.entity.code.Warehouse;
-import com.jyh.scm.entity.sys.Code;
-import com.jyh.scm.entity.sys.CodeItem;
+import com.jyh.scm.entity.console.Code;
+import com.jyh.scm.entity.console.CodeItem;
 import com.jyh.scm.entity.sys.OptLog;
 
 import tk.mybatis.mapper.entity.Condition;
@@ -70,11 +73,14 @@ public class CacheManager {
     @Autowired
     private ProductCatalogMapper productCatalogMapper;
 
-    // 系统字典缓存{appid:{type:[codes]}}
-    private static LoadingCache<String, Map<String, List<CodeItem>>> sysCode;
+    @Autowired
+    private DeptMapper deptMapper;
 
-    // 系统字典路径缓存{appid:{id:{path:'',name:''}}}
-    private static LoadingCache<String, Map<String, Map<String, Object>>> sysPathCode;
+    // 系统字典缓存{type:[codes]}
+    private static LoadingCache<String, List<CodeItem>> sysCode;
+
+    // 系统字典路径缓存{id:{path:'',name:''}}
+    private static LoadingCache<String, Map<String, Object>> sysPathCode;
 
     // 应用二维字典缓存{appid:{type:{id,name}}}
     private static LoadingCache<String, Map<String, List<Map<String, String>>>> appCode;
@@ -96,16 +102,16 @@ public class CacheManager {
 
     @PostConstruct
     public void init() {
-        sysCode = CacheBuilder.newBuilder().build(new CacheLoader<String, Map<String, List<CodeItem>>>() {
+        sysCode = CacheBuilder.newBuilder().build(new CacheLoader<String, List<CodeItem>>() {
             @Override
-            public Map<String, List<CodeItem>> load(String key) throws Exception {
-                return new HashMap<String, List<CodeItem>>();
+            public List<CodeItem> load(String key) throws Exception {
+                return new ArrayList<CodeItem>();
             }
         });
-        sysPathCode = CacheBuilder.newBuilder().build(new CacheLoader<String, Map<String, Map<String, Object>>>() {
+        sysPathCode = CacheBuilder.newBuilder().build(new CacheLoader<String, Map<String, Object>>() {
             @Override
-            public Map<String, Map<String, Object>> load(String key) throws Exception {
-                return new HashMap<String, Map<String, Object>>();
+            public Map<String, Object> load(String key) throws Exception {
+                return new HashMap<String, Object>();
             }
         });
         appCode = CacheBuilder.newBuilder().build(new CacheLoader<String, Map<String, List<Map<String, String>>>>() {
@@ -148,39 +154,25 @@ public class CacheManager {
      * 
      */
     @PostConstruct
-    public Map<String, Map<String, List<CodeItem>>> loadSysCode() {
-        ConcurrentMap<String, Map<String, List<CodeItem>>> sysCodeMap = sysCode.asMap();
+    public Map<String, List<CodeItem>> loadSysCode() {
+        ConcurrentMap<String, List<CodeItem>> sysCodeMap = sysCode.asMap();
         if (sysCodeMap == null || sysCodeMap.isEmpty()) {
             log.info("加载系统字典缓存{type:[codes]}...");
             // 组装字典数结构
             List<Code> codes = codeMapper.selectAll();
-            // 按appid归类
-            Map<String, List<Code>> allAppCodeMap = new HashMap<String, List<Code>>();
-            codes.forEach(code -> {
-                String appid = String.valueOf(code.getAppid());
-                if (allAppCodeMap.get(appid) == null) {
-                    allAppCodeMap.put(appid, new ArrayList<Code>());
-                }
-                allAppCodeMap.get(appid).add(code);
-            });
+            for (Code code : codes) {
+                CodeItem param = new CodeItem();
+                param.setType(code.getCode());
+                List<CodeItem> items = codeItemMapper.select(param);
+                List<CodeItem> topItems = items.stream().filter(item -> 0 == item.getPid()).sorted()
+                        .collect(Collectors.toList());
+                makeSysCodeTree(topItems, items);
 
-            for (String appid : allAppCodeMap.keySet()) {
-                Map<String, List<CodeItem>> appCodeMap = new HashMap<String, List<CodeItem>>();
-                for (Code code : allAppCodeMap.get(appid)) {
-                    CodeItem param = new CodeItem();
-                    param.setType(code.getCode());
-                    List<CodeItem> items = codeItemMapper.select(param);
-                    List<CodeItem> topItems = items.stream().filter(item -> 0 == item.getPid()).sorted()
-                            .collect(Collectors.toList());
-                    makeCodeTree(topItems, items);
-
-                    // 为各条目添加主键路径
-                    for (CodeItem topCode : topItems) {
-                        topCode.makePath(new LinkedList<Integer>());
-                    }
-                    appCodeMap.put(code.getCode(), topItems);
+                // 为各条目添加主键路径
+                for (CodeItem topCode : topItems) {
+                    topCode.makePath(new LinkedList<Integer>());
                 }
-                sysCodeMap.put(appid, appCodeMap);
+                sysCodeMap.put(code.getCode(), topItems);
             }
         }
         return sysCodeMap;
@@ -191,46 +183,32 @@ public class CacheManager {
      * 
      */
     @PostConstruct
-    public Map<String, Map<String, Map<String, Object>>> loadSysPathCode() {
-        ConcurrentMap<String, Map<String, Map<String, Object>>> sysPathCodeMap = sysPathCode.asMap();
+    public Map<String, Map<String, Object>> loadSysPathCode() {
+        ConcurrentMap<String, Map<String, Object>> sysPathCodeMap = sysPathCode.asMap();
         if (sysPathCodeMap == null || sysPathCodeMap.isEmpty()) {
             log.info("加载系统字典路径缓存{id:{path:'',name:''}}...");
             Map<String, List<CodeItem>> codeCache = new HashMap<String, List<CodeItem>>();
             List<Code> codes = codeMapper.selectAll();
-            // 按appid归类
-            Map<String, List<Code>> allAppCodeMap = new HashMap<String, List<Code>>();
-            codes.forEach(code -> {
-                String appid = String.valueOf(code.getAppid());
-                if (allAppCodeMap.get(appid) == null) {
-                    allAppCodeMap.put(appid, new ArrayList<Code>());
-                }
-                allAppCodeMap.get(appid).add(code);
-            });
+            for (Code code : codes) {
+                CodeItem param = new CodeItem();
+                param.setType(code.getCode());
+                List<CodeItem> items = codeItemMapper.select(param);
+                List<CodeItem> topCodes = items.stream().filter(item -> 0 == item.getPid()).sorted()
+                        .collect(Collectors.toList());
 
-            for (String appid : allAppCodeMap.keySet()) {
-                Map<String, Map<String, Object>> appCodeMap = new HashMap<String, Map<String, Object>>();
-                for (Code code : allAppCodeMap.get(appid)) {
-                    CodeItem param = new CodeItem();
-                    param.setType(code.getCode());
-                    List<CodeItem> items = codeItemMapper.select(param);
-                    List<CodeItem> topCodes = items.stream().filter(item -> 0 == item.getPid()).sorted()
-                            .collect(Collectors.toList());
+                makeSysCodeTree(topCodes, items);
 
-                    makeCodeTree(topCodes, items);
-
-                    // 添加主键路径
-                    for (CodeItem topCode : topCodes) {
-                        topCode.makePath(new LinkedList<Integer>());
-                    }
-                    codeCache.put(code.getCode(), topCodes);
+                // 添加主键路径
+                for (CodeItem topCode : topCodes) {
+                    topCode.makePath(new LinkedList<Integer>());
                 }
-                // 组装字典主键映射
-                for (String key : codeCache.keySet()) {
-                    for (CodeItem code : codeCache.get(key)) {
-                        makeCodeMap(appCodeMap, code);
-                    }
+                codeCache.put(code.getCode(), topCodes);
+            }
+            // 组装字典主键映射
+            for (String key : codeCache.keySet()) {
+                for (CodeItem code : codeCache.get(key)) {
+                    makeSysCodeMap(sysPathCodeMap, code);
                 }
-                sysPathCodeMap.put(appid, appCodeMap);
             }
         }
         return sysPathCodeMap;
@@ -317,11 +295,12 @@ public class CacheManager {
         ConcurrentMap<String, Map<String, List<BaseCascaderCode<?>>>> appCascadeCodeMap = appCascadeCode.asMap();
         if (appCascadeCodeMap == null || appCascadeCodeMap.isEmpty()) {
             log.info("加载应用级联缓存{appid:{type:[BaseCascaderCode]}}...");
-            // 商品类型
-            List<ProductCatalog> items = productCatalogMapper.selectAll();
             Map<String, Map<String, List<BaseCascaderCode<?>>>> tempAppCascadeCodeMap = new HashMap<String, Map<String, List<BaseCascaderCode<?>>>>();
+            // 商品类型
+            List<ProductCatalog> productCatalogs = productCatalogMapper.selectAll();
+
             // 按应用分类，并转为泛型
-            items.forEach(item -> {
+            productCatalogs.forEach(item -> {
                 if (tempAppCascadeCodeMap.get(String.valueOf(item.getAppid())) == null) {
                     tempAppCascadeCodeMap.put(String.valueOf(item.getAppid()),
                             new HashMap<String, List<BaseCascaderCode<?>>>());
@@ -351,6 +330,39 @@ public class CacheManager {
                 });
 
             });
+
+            // 公司部门
+            List<Dept> depts = deptMapper.selectAll();
+
+            // 按应用分类，并转为泛型
+            depts.forEach(item -> {
+                if (tempAppCascadeCodeMap.get(String.valueOf(item.getAppid())) == null) {
+                    tempAppCascadeCodeMap.put(String.valueOf(item.getAppid()),
+                            new HashMap<String, List<BaseCascaderCode<?>>>());
+                }
+                if (tempAppCascadeCodeMap.get(String.valueOf(item.getAppid())).get(CodeTypeEnum.dept.name()) == null) {
+                    tempAppCascadeCodeMap.get(String.valueOf(item.getAppid())).put(CodeTypeEnum.dept.name(),
+                            new ArrayList<BaseCascaderCode<?>>());
+                }
+                tempAppCascadeCodeMap.get(String.valueOf(item.getAppid())).get(CodeTypeEnum.dept.name()).add(item);
+            });
+
+            tempAppCascadeCodeMap.forEach((appid, itemMap) -> {
+                itemMap.forEach((type, itemList) -> {
+                    List<BaseCascaderCode<?>> topItems = itemList.stream().filter(item -> 0 == item.getPid()).sorted()
+                            .collect(Collectors.toList());
+                    makeAppCascadeCodeTree(topItems, itemList);
+                    // 为各条目添加主键路径
+                    for (BaseCascaderCode<?> topItem : topItems) {
+                        topItem.makePath(new LinkedList<Integer>());
+                    }
+                    if (appCascadeCodeMap.get(appid) == null) {
+                        appCascadeCodeMap.put(appid, new HashMap<String, List<BaseCascaderCode<?>>>());
+                    }
+                    appCascadeCodeMap.get(appid).put(CodeTypeEnum.dept.name(), topItems);
+                });
+
+            });
         }
         return appCascadeCodeMap;
     }
@@ -365,36 +377,53 @@ public class CacheManager {
                 .asMap();
         if (appCascadePathCodeMap == null || appCascadePathCodeMap.isEmpty()) {
             log.info("加载应用级联字典路径缓存{appid:{typename:{id:{path:'',name:''}}}");
-            // 获取数据
-            List<ProductCatalog> items = productCatalogMapper.selectAll();
-            List<ProductCatalog> topItemList = items.stream().filter(item -> 0 == item.getPid()).sorted()
-                    .collect(Collectors.toList());
-            if (topItemList.size() > 0) {
-                // 组装子项目
-                makeProductCatalogTree(topItemList, items);
-                // 按应用分类
-                Map<String, List<ProductCatalog>> appTopItemMap = new HashMap<String, List<ProductCatalog>>();
-
-                // 组装主键路由
-                for (ProductCatalog data : topItemList) {
-                    data.makePath(new LinkedList<Integer>());
-                    if (appTopItemMap.get(String.valueOf(data.getAppid())) == null) {
-                        appTopItemMap.put(String.valueOf(data.getAppid()), new ArrayList<ProductCatalog>());
-                    }
-                    appTopItemMap.get(String.valueOf(data.getAppid())).add(data);
+            final Map<String, Map<String, List<BaseCascaderCode<?>>>> appDataMap = new HashMap<String, Map<String, List<BaseCascaderCode<?>>>>();
+            // 收集商品分类
+            List<ProductCatalog> productCatalogs = productCatalogMapper.selectAll();
+            productCatalogs.forEach(item -> {
+                if (appDataMap.get(String.valueOf(item.getAppid())) == null) {
+                    appDataMap.put(String.valueOf(item.getAppid()), new HashMap<String, List<BaseCascaderCode<?>>>());
                 }
-
-                appTopItemMap.forEach((k, v) -> {
-                    Map<String, Map<String, Object>> itemPathMap = new HashMap<String, Map<String, Object>>();
-                    v.forEach(item -> {
-                        makePathMap(itemPathMap, item);
-                    });
-                    if (appCascadePathCodeMap.get(k) == null) {
-                        appCascadePathCodeMap.put(k, new HashMap<String, Map<String, Map<String, Object>>>());
-                        appCascadePathCodeMap.get(k).put(CodeTypeEnum.productCatalog.name(), itemPathMap);
+                if (appDataMap.get(String.valueOf(item.getAppid())).get(CodeTypeEnum.productCatalog.name()) == null) {
+                    appDataMap.get(String.valueOf(item.getAppid())).put(CodeTypeEnum.productCatalog.name(),
+                            new ArrayList<BaseCascaderCode<?>>());
+                }
+                appDataMap.get(String.valueOf(item.getAppid())).get(CodeTypeEnum.productCatalog.name()).add(item);
+            });
+            // 收集公司部门
+            List<Dept> depts = deptMapper.selectAll();
+            depts.forEach(item -> {
+                if (appDataMap.get(String.valueOf(item.getAppid())) == null) {
+                    appDataMap.put(String.valueOf(item.getAppid()), new HashMap<String, List<BaseCascaderCode<?>>>());
+                }
+                if (appDataMap.get(String.valueOf(item.getAppid())).get(CodeTypeEnum.dept.name()) == null) {
+                    appDataMap.get(String.valueOf(item.getAppid())).put(CodeTypeEnum.dept.name(),
+                            new ArrayList<BaseCascaderCode<?>>());
+                }
+                appDataMap.get(String.valueOf(item.getAppid())).get(CodeTypeEnum.dept.name()).add(item);
+            });
+            appDataMap.forEach((appid, typeMap) -> {
+                typeMap.forEach((type, datalist) -> {
+                    List<BaseCascaderCode<?>> topItemList = datalist.stream().filter(item -> 0 == item.getPid())
+                            .sorted().collect(Collectors.toList());
+                    if (topItemList.size() > 0) {
+                        Map<String, Map<String, Object>> pathMap = new HashMap<String, Map<String, Object>>();
+                        // 组装子项目
+                        makeAppCascaderCodeTree(topItemList, datalist);
+                        // 组装主键路由
+                        for (BaseCascaderCode<?> data : topItemList) {
+                            data.makePath(new LinkedList<Integer>());
+                        }
+                        topItemList.forEach(item -> {
+                            makeAppPathMap(pathMap, item);
+                        });
+                        if (appCascadePathCodeMap.get(appid) == null) {
+                            appCascadePathCodeMap.put(appid, new HashMap<String, Map<String, Map<String, Object>>>());
+                        }
+                        appCascadePathCodeMap.get(appid).put(type, pathMap);
                     }
                 });
-            }
+            });
         }
         return appCascadePathCodeMap;
     }
@@ -475,7 +504,7 @@ public class CacheManager {
      * @param codemap
      * @param code
      */
-    private void makeCodeMap(Map<String, Map<String, Object>> codemap, CodeItem code) {
+    private void makeSysCodeMap(Map<String, Map<String, Object>> codemap, CodeItem code) {
         Map<String, Object> codeMapItem = new HashMap<String, Object>();
         codeMapItem.put("name", code.getName());
         codeMapItem.put("path", code.getPath());
@@ -483,7 +512,7 @@ public class CacheManager {
         codemap.put(String.valueOf(code.getId()), codeMapItem);
         if (code.getChildren() != null) {
             for (CodeItem item : code.getChildren()) {
-                makeCodeMap(codemap, item);
+                makeSysCodeMap(codemap, item);
             }
         }
     }
@@ -496,7 +525,7 @@ public class CacheManager {
      * @param allItems
      *            总字典列表
      */
-    private void makeCodeTree(List<CodeItem> topItems, List<CodeItem> allItems) {
+    private void makeSysCodeTree(List<CodeItem> topItems, List<CodeItem> allItems) {
         for (CodeItem pitem : topItems) {
             // 收集下级子菜单
             List<CodeItem> child = allItems.stream().filter(item -> item.getPid().equals(pitem.getId())).sorted()
@@ -504,7 +533,7 @@ public class CacheManager {
             if (child.size() > 0) {
                 // 子菜单列表排序
                 pitem.setChildren(child);
-                makeCodeTree(child, allItems);
+                makeSysCodeTree(child, allItems);
             }
         }
     }
@@ -531,41 +560,41 @@ public class CacheManager {
     }
 
     /**
-     * 组装商品列表路径
+     * 组装应用级联字典路径
      * 
      * @param pathMap
      * @param item
      */
-    private void makePathMap(Map<String, Map<String, Object>> pathMap, ProductCatalog item) {
+    private void makeAppPathMap(Map<String, Map<String, Object>> pathMap, BaseCascaderCode<?> item) {
         Map<String, Object> dataMap = new HashMap<String, Object>();
         dataMap.put("name", item.getName());
         dataMap.put("path", item.getPath());
         item.setPath(null);
         pathMap.put(String.valueOf(item.getId()), dataMap);
         if (item.getChildren() != null) {
-            for (ProductCatalog subitem : item.getChildren()) {
-                makePathMap(pathMap, subitem);
+            for (BaseCascaderCode<?> subitem : item.getChildren()) {
+                makeAppPathMap(pathMap, subitem);
             }
         }
     }
 
     /**
-     * 递归组装产品分类树
+     * 递归组装应用字典树
      * 
      * @param pItems
      *            父字典列表
      * @param allItems
      *            总字典列表
      */
-    private void makeProductCatalogTree(List<ProductCatalog> pDataList, List<ProductCatalog> dataList) {
-        for (ProductCatalog pitem : pDataList) {
+    private void makeAppCascaderCodeTree(List<BaseCascaderCode<?>> pDataList, List<BaseCascaderCode<?>> dataList) {
+        for (BaseCascaderCode<?> pitem : pDataList) {
             // 收集下级子菜单
-            List<ProductCatalog> child = dataList.stream().filter(item -> item.getPid().equals(pitem.getId())).sorted()
-                    .collect(Collectors.toList());
+            List<BaseCascaderCode<?>> child = dataList.stream().filter(item -> item.getPid().equals(pitem.getId()))
+                    .sorted().collect(Collectors.toList());
             if (child.size() > 0) {
                 // 子菜单列表排序
                 pitem.setChildren(child);
-                makeProductCatalogTree(child, dataList);
+                makeAppCascaderCodeTree(child, dataList);
             }
         }
     }

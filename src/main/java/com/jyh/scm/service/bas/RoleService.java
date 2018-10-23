@@ -1,4 +1,4 @@
-package com.jyh.scm.service;
+package com.jyh.scm.service.bas;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jyh.scm.base.AppConst;
 import com.jyh.scm.base.SessionManager;
-import com.jyh.scm.dao.RoleMapper;
-import com.jyh.scm.entity.Role;
-import com.jyh.scm.entity.sys.Code;
+import com.jyh.scm.constant.AppConst;
+import com.jyh.scm.dao.bas.RoleMapper;
+import com.jyh.scm.entity.bas.Role;
+import com.jyh.scm.entity.console.Code;
 
 import tk.mybatis.mapper.entity.Condition;
 
@@ -95,12 +95,14 @@ public class RoleService {
         List<Map<String, String>> points = roleMapper.userMenus(userid);
         Map<String, List<String>> menus = new HashMap<String, List<String>>();
         points.forEach(point -> {
-            String menuKey = point.get("menuKey");
-            if (menus.get(menuKey) == null) {
-                menus.put(menuKey, new ArrayList<String>());
-            }
-            if (point.get("actionKey") != null) {
-                menus.get(menuKey).add(point.get("actionKey"));
+            if (point != null) {
+                String menuKey = point.get("menuKey");
+                if (menus.get(menuKey) == null) {
+                    menus.put(menuKey, new ArrayList<String>());
+                }
+                if (point.get("actionKey") != null) {
+                    menus.get(menuKey).add(point.get("actionKey"));
+                }
             }
         });
         return menus;
