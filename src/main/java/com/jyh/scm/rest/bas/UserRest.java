@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.pagehelper.PageInfo;
 import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.constant.AppConst;
 import com.jyh.scm.dao.bas.UserMapper;
@@ -45,6 +46,14 @@ public class UserRest {
     @Autowired
     private RoleService roleService;
 
+    @GetMapping
+    public ResponseEntity<PageInfo<User>> queryByPage(@RequestParam("orderField") String orderField,
+            @RequestParam("order") String order, @RequestParam("pageNum") int pageNum,
+            @RequestParam("pageSize") int pageSize) {
+        return new ResponseEntity<PageInfo<User>>(userService.queryByPage(orderField, order, pageNum, pageSize),
+                HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<Object> addUser(@RequestBody User user) {
         user.setCreatedBy(SessionManager.getAccount());
@@ -66,11 +75,6 @@ public class UserRest {
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable("id") int id) {
         return new ResponseEntity<User>(userMapper.selectByPrimaryKey(id), HttpStatus.OK);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<User>> loadUser() {
-        return new ResponseEntity<List<User>>(userService.load(), HttpStatus.OK);
     }
 
     @GetMapping("/matchWithAccountOrName")

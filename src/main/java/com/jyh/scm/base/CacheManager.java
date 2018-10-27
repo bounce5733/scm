@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -330,7 +331,7 @@ public class CacheManager {
                 });
 
             });
-
+            
             // 公司部门
             List<Dept> depts = deptMapper.selectAll();
 
@@ -359,7 +360,7 @@ public class CacheManager {
                     if (appCascadeCodeMap.get(appid) == null) {
                         appCascadeCodeMap.put(appid, new HashMap<String, List<BaseCascaderCode<?>>>());
                     }
-                    appCascadeCodeMap.get(appid).put(CodeTypeEnum.dept.name(), topItems);
+                    appCascadeCodeMap.get(appid).put(type, topItems);
                 });
 
             });

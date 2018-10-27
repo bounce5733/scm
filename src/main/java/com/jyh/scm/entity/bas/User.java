@@ -30,13 +30,17 @@ public class User implements Serializable {
 
     private String pwd;// 密码
 
-    private String position;
+    private String deptid; // 部门
 
-    private String mobile;
+    private String position; // 职位
+
+    private String mobile; // 手机
 
     private String qq;
 
-    private String email;
+    private String email; // 邮箱
+
+    private String enabled;
 
     private String createdBy;// 创建人
 
@@ -46,16 +50,12 @@ public class User implements Serializable {
 
     private String updatedTime;// 更新时间
 
-    public String getAccount() {
-        return account;
+    public Integer getId() {
+        return id;
     }
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public String getCreatedTime() {
-        return createdTime;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Integer getAppid() {
@@ -66,48 +66,36 @@ public class User implements Serializable {
         this.appid = appid;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getPwd() {
-        return pwd;
-    }
-
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public String getUpdatedTime() {
-        return updatedTime;
+    public String getAccount() {
+        return account;
     }
 
     public void setAccount(String account) {
         this.account = account;
     }
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public void setCreatedTime(String createdTime) {
-        this.createdTime = createdTime;
+    public String getName() {
+        return name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
+    public String getPwd() {
+        return pwd;
+    }
+
     public void setPwd(String pwd) {
         this.pwd = pwd;
     }
 
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
+    public String getDeptid() {
+        return deptid;
     }
 
-    public void setUpdatedTime(String updatedTime) {
-        this.updatedTime = updatedTime;
+    public void setDeptid(String deptid) {
+        this.deptid = deptid;
     }
 
     public String getPosition() {
@@ -142,12 +130,44 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public Integer getId() {
-        return id;
+    public String getEnabled() {
+        return enabled;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setEnabled(String enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(String createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public String getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(String updatedTime) {
+        this.updatedTime = updatedTime;
     }
 
     public static long getSerialversionuid() {
