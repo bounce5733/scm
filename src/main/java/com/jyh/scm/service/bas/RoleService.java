@@ -76,6 +76,22 @@ public class RoleService {
         return roleMapper.selectByCondition(c);
     }
 
+    /**
+     * 授权用户角色
+     * 
+     * @param roleid
+     * @param users
+     */
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+    public void assignRoles(int userid, List<Integer> roleids) {
+        // 清空授权角色
+        roleMapper.clearAssignedRoles(userid);
+        // 授权
+        roleids.forEach(roleid -> {
+            roleMapper.assignUser(roleid, userid);
+        });
+    }
+
     public void remove(int roleid) {
         // 清空授权菜单
         roleMapper.clearAssignedMenus(roleid);

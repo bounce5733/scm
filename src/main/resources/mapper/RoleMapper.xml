@@ -15,6 +15,10 @@
 	<delete id="clearAssignedUsers">
 		DELETE FROM sys_role_user WHERE role_id = #{roleid}
 	</delete>
+	
+	<delete id="clearAssignedRoles">
+        DELETE FROM sys_role_user WHERE user_id = #{userid}
+    </delete>
 
 	<delete id="clearAssignedMenus">
 		DELETE FROM sys_role_menu WHERE role_id = #{roleid}

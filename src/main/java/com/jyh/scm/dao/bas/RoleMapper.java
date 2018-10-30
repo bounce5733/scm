@@ -18,6 +18,8 @@ public interface RoleMapper extends Mapper<Role> {
     void clearAssignedMenus(@Param("roleid") int roleid);
 
     void clearAssignedUsers(@Param("roleid") int roleid);
+    
+    void clearAssignedRoles(@Param("userid") int userid);
 
     void removeRoleUserByUserId(@Param("userid") int userid);
 

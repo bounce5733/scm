@@ -18,9 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.jyh.scm.base.SessionManager;
-import com.jyh.scm.constant.AppConst;
 import com.jyh.scm.dao.bas.UserMapper;
 import com.jyh.scm.entity.bas.User;
 import com.jyh.scm.service.bas.RoleService;
@@ -54,13 +55,16 @@ public class UserRest {
                 HttpStatus.OK);
     }
 
+    @SuppressWarnings("unchecked")
     @PostMapping
-    public ResponseEntity<Object> addUser(@RequestBody User user) {
+    public ResponseEntity<Object> addUser(@RequestBody Map<String, Object> userinfo) {
+        User user = JSON.toJavaObject(JSONObject.parseObject(userinfo.get("user").toString()), User.class);
         user.setCreatedBy(SessionManager.getAccount());
         user.setCreatedTime(TimeUtil.getTime());
         user.setAppid(SessionManager.getAppid());
-        user.setPwd(AppConst.SYS_DEFAULT_PWD);
         userMapper.insertSelective(user);
+        List<Integer> roleids = (List<Integer>) userinfo.get("roleids");
+        roleService.assignRoles(user.getId(), roleids);
         return new ResponseEntity<Object>(HttpStatus.OK);
     }
 

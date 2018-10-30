@@ -30,7 +30,7 @@ public class User implements Serializable {
 
     private String pwd;// 密码
 
-    private String deptid; // 部门
+    private Integer deptid; // 部门
 
     private String position; // 职位
 
@@ -90,11 +90,11 @@ public class User implements Serializable {
         this.pwd = pwd;
     }
 
-    public String getDeptid() {
+    public Integer getDeptid() {
         return deptid;
     }
 
-    public void setDeptid(String deptid) {
+    public void setDeptid(Integer deptid) {
         this.deptid = deptid;
     }
 
