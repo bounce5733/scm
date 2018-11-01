@@ -1,11 +1,13 @@
 package com.jyh.scm.entity.bas;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * 用户
@@ -42,6 +44,8 @@ public class User implements Serializable {
 
     private String enabled;
 
+    private String isCompanyCreater; // 是否公司创建人
+
     private String createdBy;// 创建人
 
     private String createdTime;// 创建时间
@@ -49,6 +53,12 @@ public class User implements Serializable {
     private String updatedBy;// 更新人
 
     private String updatedTime;// 更新时间
+
+    @Transient
+    private List<Integer> deptids;
+
+    @Transient
+    private List<Integer> roleids;
 
     public Integer getId() {
         return id;
@@ -138,6 +148,14 @@ public class User implements Serializable {
         this.enabled = enabled;
     }
 
+    public String getIsCompanyCreater() {
+        return isCompanyCreater;
+    }
+
+    public void setIsCompanyCreater(String isCompanyCreater) {
+        this.isCompanyCreater = isCompanyCreater;
+    }
+
     public String getCreatedBy() {
         return createdBy;
     }
@@ -172,6 +190,22 @@ public class User implements Serializable {
 
     public static long getSerialversionuid() {
         return serialVersionUID;
+    }
+
+    public List<Integer> getDeptids() {
+        return deptids;
+    }
+
+    public void setDeptids(List<Integer> deptids) {
+        this.deptids = deptids;
+    }
+
+    public List<Integer> getRoleids() {
+        return roleids;
+    }
+
+    public void setRoleids(List<Integer> roleids) {
+        this.roleids = roleids;
     }
 
 }

@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.dao.bas.UserMapper;
@@ -27,6 +25,8 @@ import com.jyh.scm.entity.bas.User;
 import com.jyh.scm.service.bas.RoleService;
 import com.jyh.scm.service.bas.UserService;
 import com.jyh.scm.util.TimeUtil;
+
+import tk.mybatis.mapper.entity.Condition;
 
 /**
  * 用户API
@@ -55,16 +55,30 @@ public class UserRest {
                 HttpStatus.OK);
     }
 
-    @SuppressWarnings("unchecked")
     @PostMapping
-    public ResponseEntity<Object> addUser(@RequestBody Map<String, Object> userinfo) {
-        User user = JSON.toJavaObject(JSONObject.parseObject(userinfo.get("user").toString()), User.class);
+    public ResponseEntity<Object> addUser(@RequestBody User user) {
+        // 校验账号
+        Condition c = new Condition(User.class);
+        c.createCriteria().andEqualTo("account", user.getAccount());
+        int count = userMapper.selectCountByCondition(c);
+        if (count > 0) {
+            return new ResponseEntity<Object>(HttpStatus.FOUND);
+        }
         user.setCreatedBy(SessionManager.getAccount());
         user.setCreatedTime(TimeUtil.getTime());
         user.setAppid(SessionManager.getAppid());
-        userMapper.insertSelective(user);
-        List<Integer> roleids = (List<Integer>) userinfo.get("roleids");
-        roleService.assignRoles(user.getId(), roleids);
+        userService.addUser(user);
+        return new ResponseEntity<Object>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/enable")
+    public ResponseEntity<Object> enableUser(@RequestBody User user) {
+        User param = new User();
+        param.setId(user.getId());
+        param.setEnabled(user.getEnabled().equals("T") ? "F" : "T");
+        param.setUpdatedBy(SessionManager.getAccount());
+        param.setUpdatedTime(TimeUtil.getTime());
+        userMapper.updateByPrimaryKeySelective(param);
         return new ResponseEntity<Object>(HttpStatus.OK);
     }
 
@@ -109,5 +123,13 @@ public class UserRest {
         userinfo.put("user", user);
         userinfo.put("menus", menus);
         return new ResponseEntity<Map<String, Object>>(userinfo, HttpStatus.OK);
+    }
+
+    @PatchMapping("/resetPwd")
+    public ResponseEntity<Object> resetPwd(@RequestBody User user) {
+        user.setUpdatedBy(SessionManager.getAccount());
+        user.setUpdatedTime(TimeUtil.getTime());
+        userMapper.updateByPrimaryKeySelective(user);
+        return new ResponseEntity<Object>(HttpStatus.OK);
     }
 }

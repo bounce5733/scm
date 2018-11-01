@@ -101,6 +101,7 @@ public class LoginService {
         param.setName(registerInfo.get("name"));
         param.setPwd(CodeUtil.md5Encode(registerInfo.get("password")));
         param.setMobile(registerInfo.get("mobile"));
+        param.setIsCompanyCreater("T");
         param.setCreatedBy(registerInfo.get("account"));
         param.setCreatedTime(TimeUtil.getTime());
         userMapper.insertSelective(param);

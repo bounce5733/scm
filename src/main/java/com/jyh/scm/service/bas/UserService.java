@@ -36,6 +36,9 @@ public class UserService {
     @Autowired
     private RoleMapper roleMapper;
 
+    @Autowired
+    private RoleService roleService;
+
     public List<User> query(String param) {
         Condition c = new Condition(User.class);
         c.createCriteria().andCondition("account LIKE '%" + param + "%' OR name LIKE '%" + param + "%'")
@@ -70,5 +73,11 @@ public class UserService {
             }
 
         });
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+    public void addUser(User user) {
+        userMapper.insertSelective(user);
+        roleService.assignRoles(user.getId(), user.getRoleids());
     }
 }
