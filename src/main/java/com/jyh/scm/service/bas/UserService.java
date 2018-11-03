@@ -69,6 +69,11 @@ public class UserService {
                         example.setOrderByClause(StringUtil.camelToUnderline(orderField) + " " + order);
                     }
                 }
+                if (StringUtils.isNotBlank(orderField)) {
+                    if (StringUtils.isNotBlank(order)) {
+                        example.setOrderByClause(StringUtil.camelToUnderline(orderField) + " " + order);
+                    }
+                }
                 userMapper.selectByCondition(example);
             }
 
@@ -80,4 +85,11 @@ public class UserService {
         userMapper.insertSelective(user);
         roleService.assignRoles(user.getId(), user.getRoleids());
     }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+    public void editUser(User user) {
+        userMapper.updateByPrimaryKeySelective(user);
+        roleService.assignRoles(user.getId(), user.getRoleids());
+    }
+
 }

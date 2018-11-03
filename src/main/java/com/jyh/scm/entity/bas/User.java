@@ -1,6 +1,7 @@
 package com.jyh.scm.entity.bas;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.GeneratedValue;
@@ -55,7 +56,7 @@ public class User implements Serializable {
     private String updatedTime;// 更新时间
 
     @Transient
-    private List<Integer> deptids;
+    private List<Integer> deptids = new LinkedList<Integer>(); //用于级联多选路径，必须初始化
 
     @Transient
     private List<Integer> roleids;

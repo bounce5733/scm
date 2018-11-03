@@ -70,6 +70,14 @@ public class UserRest {
         userService.addUser(user);
         return new ResponseEntity<Object>(HttpStatus.OK);
     }
+    
+    @PatchMapping
+    public ResponseEntity<Object> editUser(@RequestBody User user) {
+        user.setUpdatedBy(SessionManager.getAccount());
+        user.setUpdatedTime(TimeUtil.getTime());
+        userService.editUser(user);
+        return new ResponseEntity<Object>(HttpStatus.OK);
+    }
 
     @PatchMapping("/enable")
     public ResponseEntity<Object> enableUser(@RequestBody User user) {
@@ -79,14 +87,6 @@ public class UserRest {
         param.setUpdatedBy(SessionManager.getAccount());
         param.setUpdatedTime(TimeUtil.getTime());
         userMapper.updateByPrimaryKeySelective(param);
-        return new ResponseEntity<Object>(HttpStatus.OK);
-    }
-
-    @PatchMapping
-    public ResponseEntity<Object> editUser(@RequestBody User user) {
-        user.setUpdatedBy(SessionManager.getAccount());
-        user.setUpdatedTime(TimeUtil.getTime());
-        userMapper.updateByPrimaryKeySelective(user);
         return new ResponseEntity<Object>(HttpStatus.OK);
     }
 

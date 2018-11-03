@@ -32,6 +32,11 @@
 		SELECT menu_key AS menuKey,action_key AS actionKey FROM
 		sys_role_menu WHERE role_id = #{roleid}
 	</select>
+	
+	<select id="userRoles" resultType="int">
+        SELECT role_id AS roleId FROM
+        sys_role_user WHERE user_id = #{userid}
+    </select>
 
 	<select id="userMenus" resultType="java.util.HashMap">
 		SELECT rm.menu_key AS menuKey,rm.action_key AS actionKey FROM

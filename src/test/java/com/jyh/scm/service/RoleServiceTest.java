@@ -1,0 +1,33 @@
+package com.jyh.scm.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import com.alibaba.fastjson.JSON;
+import com.jyh.scm.service.bas.RoleService;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class RoleServiceTest {
+
+    private static final Logger log = LoggerFactory.getLogger(RoleServiceTest.class);
+
+    @Autowired
+    private RoleService roleService;
+
+    @Test
+    @Ignore
+    public void userMenus() {
+        Map<String, List<String>> menuActions = roleService.userMenus(27);
+        log.info(JSON.toJSONString(menuActions));
+    }
+}

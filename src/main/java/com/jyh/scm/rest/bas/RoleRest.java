@@ -107,6 +107,12 @@ public class RoleRest {
         return new ResponseEntity<List<Role>>(roles, HttpStatus.OK);
     }
 
+    @GetMapping("/userRoles/{userid}")
+    public ResponseEntity<List<Integer>> userRoles(@PathVariable("userid") int userid) {
+        List<Integer> roleids = roleMapper.userRoles(userid);
+        return new ResponseEntity<List<Integer>>(roleids, HttpStatus.OK);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> removeRole(@PathVariable("id") int id) {
         try {
@@ -134,7 +140,7 @@ public class RoleRest {
      * @param userid
      * @return
      */
-    @GetMapping("/usermenus/{userid}")
+    @GetMapping("/userMenus/{userid}")
     public ResponseEntity<Map<String, List<String>>> userMenus(@PathVariable("userid") int userid) {
         return new ResponseEntity<Map<String, List<String>>>(service.userMenus(userid), HttpStatus.OK);
     }
