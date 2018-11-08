@@ -11,7 +11,7 @@ import com.jyh.scm.entity.BaseEntity;
  * @date 2018年9月6日 下午10:35:22
  */
 @Table(name = "bas_company")
-public class Company extends BaseEntity{
+public class Company extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 

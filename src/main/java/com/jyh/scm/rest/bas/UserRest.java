@@ -48,11 +48,12 @@ public class UserRest {
     private RoleService roleService;
 
     @GetMapping
-    public ResponseEntity<PageInfo<User>> queryByPage(@RequestParam("orderField") String orderField,
-            @RequestParam("order") String order, @RequestParam("pageNum") int pageNum,
-            @RequestParam("pageSize") int pageSize) {
-        return new ResponseEntity<PageInfo<User>>(userService.queryByPage(orderField, order, pageNum, pageSize),
-                HttpStatus.OK);
+    public ResponseEntity<PageInfo<User>> queryByPage(@RequestParam("param") String param,
+            @RequestParam("status") String status, @RequestParam("deptid") int deptid,
+            @RequestParam("orderField") String orderField, @RequestParam("order") String order,
+            @RequestParam("pageNum") int pageNum, @RequestParam("pageSize") int pageSize) {
+        return new ResponseEntity<PageInfo<User>>(
+                userService.queryByPage(param, status, deptid, orderField, order, pageNum, pageSize), HttpStatus.OK);
     }
 
     @PostMapping
@@ -70,7 +71,7 @@ public class UserRest {
         userService.addUser(user);
         return new ResponseEntity<Object>(HttpStatus.OK);
     }
-    
+
     @PatchMapping
     public ResponseEntity<Object> editUser(@RequestBody User user) {
         user.setUpdatedBy(SessionManager.getAccount());

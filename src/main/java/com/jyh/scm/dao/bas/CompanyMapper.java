@@ -5,5 +5,4 @@ import com.jyh.scm.entity.bas.Company;
 
 public interface CompanyMapper extends Mapper<Company> {
 
-	
 }

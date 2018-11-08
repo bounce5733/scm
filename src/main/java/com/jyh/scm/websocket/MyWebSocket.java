@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
  * @author jiangyonghua
  * @date 2018年9月3日 下午10:18:58
  */
-//@ServerEndpoint(value = "/websocket")
-//@Component
+// @ServerEndpoint(value = "/websocket")
+// @Component
 public class MyWebSocket {
 
     private static final Logger log = LoggerFactory.getLogger(MyWebSocket.class);

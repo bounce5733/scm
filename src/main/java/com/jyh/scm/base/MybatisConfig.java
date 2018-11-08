@@ -25,47 +25,47 @@ import tk.mybatis.spring.mapper.MapperScannerConfigurer;
 @Component
 public class MybatisConfig {
 
-	@Bean
-	public MapperScannerConfigurer mapperScannerConfigurer() {
-		MapperScannerConfigurer mapperScannerConfigurer = new MapperScannerConfigurer();
-		mapperScannerConfigurer.setSqlSessionFactoryBeanName("sqlSessionFactoryBean");
-		mapperScannerConfigurer.setBasePackage(AppConst.MAPPER_PACKAGE);
+    @Bean
+    public MapperScannerConfigurer mapperScannerConfigurer() {
+        MapperScannerConfigurer mapperScannerConfigurer = new MapperScannerConfigurer();
+        mapperScannerConfigurer.setSqlSessionFactoryBeanName("sqlSessionFactoryBean");
+        mapperScannerConfigurer.setBasePackage(AppConst.MAPPER_PACKAGE);
 
-		// 配置通用Mapper，详情请查阅官方文档
-		Properties properties = new Properties();
-		properties.setProperty("mappers", AppConst.MAPPER_INTERFACE_REFERENCE);
-		properties.setProperty("notEmpty", "false");// insert、update是否判断字符串类型!='' 即 test="str != null"表达式内是否追加 and str
-													// != ''
-		properties.setProperty("IDENTITY", "MYSQL");
-		mapperScannerConfigurer.setProperties(properties);
+        // 配置通用Mapper，详情请查阅官方文档
+        Properties properties = new Properties();
+        properties.setProperty("mappers", AppConst.MAPPER_INTERFACE_REFERENCE);
+        properties.setProperty("notEmpty", "false");// insert、update是否判断字符串类型!='' 即 test="str != null"表达式内是否追加 and str
+                                                    // != ''
+        properties.setProperty("IDENTITY", "MYSQL");
+        mapperScannerConfigurer.setProperties(properties);
 
-		return mapperScannerConfigurer;
-	}
+        return mapperScannerConfigurer;
+    }
 
-	@Bean
-	public SqlSessionFactory sqlSessionFactoryBean(DataSource dataSource) throws Exception {
+    @Bean
+    public SqlSessionFactory sqlSessionFactoryBean(DataSource dataSource) throws Exception {
 
-		Configuration config = new Configuration();
-		config.setLazyLoadingEnabled(true);
-		config.setMapUnderscoreToCamelCase(true);
+        Configuration config = new Configuration();
+        config.setLazyLoadingEnabled(true);
+        config.setMapUnderscoreToCamelCase(true);
 
-		SqlSessionFactoryBean factory = new SqlSessionFactoryBean();
-		factory.setDataSource(dataSource);
-		factory.setTypeAliasesPackage(AppConst.MODEL_PACKAGE);
-		factory.setConfiguration(config);
+        SqlSessionFactoryBean factory = new SqlSessionFactoryBean();
+        factory.setDataSource(dataSource);
+        factory.setTypeAliasesPackage(AppConst.MODEL_PACKAGE);
+        factory.setConfiguration(config);
 
-		// 配置分页插件，详情请查阅官方文档
-		PageInterceptor pageInterceptor = new PageInterceptor();
-		Properties properties = new Properties();
-		properties.setProperty("pageSizeZero", "true");// 分页尺寸为0时查询所有纪录不再执行分页
-		properties.setProperty("reasonable", "true");// 页码<=0 查询第一页，页码>=总页数查询最后一页
-		properties.setProperty("supportMethodsArguments", "true");// 支持通过 Mapper 接口参数来传递分页参数
-		pageInterceptor.setProperties(properties);
-		// 添加插件
-		factory.setPlugins(new Interceptor[] { pageInterceptor });
+        // 配置分页插件，详情请查阅官方文档
+        PageInterceptor pageInterceptor = new PageInterceptor();
+        Properties properties = new Properties();
+        properties.setProperty("pageSizeZero", "true");// 分页尺寸为0时查询所有纪录不再执行分页
+        properties.setProperty("reasonable", "true");// 页码<=0 查询第一页，页码>=总页数查询最后一页
+        properties.setProperty("supportMethodsArguments", "true");// 支持通过 Mapper 接口参数来传递分页参数
+        pageInterceptor.setProperties(properties);
+        // 添加插件
+        factory.setPlugins(new Interceptor[] { pageInterceptor });
 
-		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-		factory.setMapperLocations(resolver.getResources("classpath:mapper/*.xml"));
-		return factory.getObject();
-	}
+        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        factory.setMapperLocations(resolver.getResources("classpath:mapper/*.xml"));
+        return factory.getObject();
+    }
 }

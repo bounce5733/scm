@@ -20,6 +20,7 @@ import com.jyh.scm.util.StringUtil;
 
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
 /**
  * 用户服务
@@ -56,7 +57,8 @@ public class UserService {
         return userMapper.roleUsers(roleid);
     }
 
-    public PageInfo<User> queryByPage(String orderField, String order, int pageNum, int pageSize) {
+    public PageInfo<User> queryByPage(String param, String status, int deptid, String orderField, String order,
+            int pageNum, int pageSize) {
         return PageHelper.startPage(pageNum, pageSize, true).doSelectPageInfo(new ISelect() {
 
             @Override
@@ -64,6 +66,20 @@ public class UserService {
                 Example example = new Example(User.class);
                 Example.Criteria criteria = example.createCriteria();
                 criteria.andEqualTo(AppConst.APPID_KEY, SessionManager.getAppid());
+                if (StringUtils.isNotBlank(param)) {
+                    Criteria subCriteria = example.createCriteria();
+                    subCriteria.orLike("account", "%" + param + "%");
+                    subCriteria.orLike("name", "%" + param + "%");
+                    subCriteria.orLike("mobile", "%" + param + "%");
+                    subCriteria.orLike("position", "%" + param + "%");
+                    example.and(subCriteria);
+                }
+                if (StringUtils.isNotBlank(status)) {
+                    criteria.andEqualTo("enabled", status);
+                }
+                if (deptid != AppConst.NUM_ID_ALL) {
+                    criteria.andEqualTo("deptid", deptid);
+                }
                 if (StringUtils.isNotBlank(orderField)) {
                     if (StringUtils.isNotBlank(order)) {
                         example.setOrderByClause(StringUtil.camelToUnderline(orderField) + " " + order);

@@ -37,7 +37,7 @@ public class LoginRest {
 
     @Autowired
     private LoginService sysService;
-    
+
     @Autowired
     private CacheManager cacheManager;
 

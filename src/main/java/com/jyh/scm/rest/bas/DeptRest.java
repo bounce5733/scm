@@ -73,8 +73,7 @@ public class DeptRest {
     }
 
     @GetMapping("/moveTop/{id}")
-    public ResponseEntity<Object> moveTopDept(@PathVariable("id") Integer id,
-            @RequestParam("pid") Integer pid) {
+    public ResponseEntity<Object> moveTopDept(@PathVariable("id") Integer id, @RequestParam("pid") Integer pid) {
         deptService.moveTop(id, pid);
         cacheManager.refreshAppCascadeCode();
         return new ResponseEntity<Object>(HttpStatus.OK);

@@ -18,13 +18,13 @@ public interface RoleMapper extends Mapper<Role> {
     void clearAssignedMenus(@Param("roleid") int roleid);
 
     void clearAssignedUsers(@Param("roleid") int roleid);
-    
+
     void clearAssignedRoles(@Param("userid") int userid);
 
     void removeRoleUserByUserId(@Param("userid") int userid);
 
     List<Integer> userRoles(@Param("userid") int userid);
-    
+
     List<Map<String, String>> roleMenus(@Param("roleid") int roleid);
 
     List<Map<String, String>> userMenus(@Param("userid") int userid);

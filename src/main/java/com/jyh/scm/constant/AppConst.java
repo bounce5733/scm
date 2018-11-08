@@ -11,14 +11,16 @@ public class AppConst {
 
     public static final String ENCODING = "UTF-8";
 
+    public static final int NUM_ID_ALL = -1;// 下拉框中全选,id为数字
+
     public static final String SUPER_APPID = "0";
-    
+
     public static final String APPID_KEY = "appid";
 
     public static final String SYS_DEFAULT_PWD = "c6f057b86584942e415435ffb1fa93d4";
-    
+
     public static final int SUPER_COMPANY_ID = 0;
-    
+
     public static final int SUPER_ADMIN_ROLEID = 0;
 
     public static final String BASE_PACKAGE = "com.jyh.scm";// 项目基础包名称，根据自己公司的项目修改
@@ -37,20 +39,20 @@ public class AppConst {
     // 免验证资源
     public static final List<String> AUTH_SKIP_URI = new ArrayList<String>();
 
-    //------默认仓库------
+    // ------默认仓库------
     public static final String DEFAULT_WAREHOUSE_CODE = "001";
-    
+
     public static final String DEFAULT_WAREHOUSE_NAME = "默认仓";
-    
-    //------默认商品分类------
+
+    // ------默认商品分类------
     public static final String DEFAULT_PRODUCT_CATALOG_NAME = "通用";
-    
-  //------默认部门------
+
+    // ------默认部门------
     public static final String DEFAULT_DEPT_NAME = "总部";
-    
-    //------默认客户级别------
+
+    // ------默认客户级别------
     public static final String DEFAULT_CUSTOMER_GRADE_NAME = "普通";
-    
+
     static {
         AUTH_SKIP_URI.add("/sys/login");
         AUTH_SKIP_URI.add("/sys/login/register");

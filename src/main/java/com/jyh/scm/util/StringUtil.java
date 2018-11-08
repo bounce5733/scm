@@ -8,54 +8,54 @@ package com.jyh.scm.util;
  */
 public class StringUtil {
 
-	/**
-	 * 驼峰式转下划线形式
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public static String camelToUnderline(String name) {
-		if (StringUtil.isEmpty(name)) {
-			return "";
-		}
-		int len = name.length();
-		StringBuilder sb = new StringBuilder(len);
-		for (int i = 0; i < len; i++) {
-			char c = name.charAt(i);
-			if (Character.isUpperCase(c)) {
-				sb.append('_');
-				sb.append(Character.toLowerCase(c));
-			} else {
-				sb.append(c);
-			}
-		}
-		return sb.toString();
-	}
+    /**
+     * 驼峰式转下划线形式
+     * 
+     * @param name
+     * @return
+     */
+    public static String camelToUnderline(String name) {
+        if (StringUtil.isEmpty(name)) {
+            return "";
+        }
+        int len = name.length();
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            char c = name.charAt(i);
+            if (Character.isUpperCase(c)) {
+                sb.append('_');
+                sb.append(Character.toLowerCase(c));
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
 
-	/**
-	 * 判断字符串是否为空或null
-	 * 
-	 * @param str
-	 * @return
-	 */
-	public static boolean isEmpty(String str) {
-		if (str == null || str.trim().equals("")) {
-			return true;
-		}
-		return false;
-	}
+    /**
+     * 判断字符串是否为空或null
+     * 
+     * @param str
+     * @return
+     */
+    public static boolean isEmpty(String str) {
+        if (str == null || str.trim().equals("")) {
+            return true;
+        }
+        return false;
+    }
 
-	/**
-	 * 判断字符串是否不为空或null
-	 * 
-	 * @param str
-	 * @return
-	 */
-	public static boolean isNotEmpty(String str) {
-		if (str == null || str.trim().equals("")) {
-			return false;
-		}
-		return true;
-	}
+    /**
+     * 判断字符串是否不为空或null
+     * 
+     * @param str
+     * @return
+     */
+    public static boolean isNotEmpty(String str) {
+        if (str == null || str.trim().equals("")) {
+            return false;
+        }
+        return true;
+    }
 
 }

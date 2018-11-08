@@ -330,7 +330,7 @@ public class CacheManager {
                 });
 
             });
-            
+
             // 公司部门
             List<Dept> depts = deptMapper.selectAll();
 

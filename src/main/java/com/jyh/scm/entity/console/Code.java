@@ -20,7 +20,7 @@ public class Code {
 
     @Id
     private String code;
-    
+
     private String name;
 
     @Transient

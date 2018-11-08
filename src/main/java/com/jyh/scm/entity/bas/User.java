@@ -56,7 +56,7 @@ public class User implements Serializable {
     private String updatedTime;// 更新时间
 
     @Transient
-    private List<Integer> deptids = new LinkedList<Integer>(); //用于级联多选路径，必须初始化
+    private List<Integer> deptids = new LinkedList<Integer>(); // 用于级联多选路径，必须初始化
 
     @Transient
     private List<Integer> roleids;

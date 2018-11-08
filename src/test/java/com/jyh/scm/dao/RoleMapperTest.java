@@ -19,10 +19,10 @@ import com.jyh.scm.dao.bas.RoleMapper;
 public class RoleMapperTest {
 
     private static final Logger log = LoggerFactory.getLogger(RoleMapperTest.class);
-    
+
     @Autowired
     private RoleMapper roleMapper;
-    
+
     @Test
     @Ignore
     public void userRoles() {
