@@ -3,6 +3,7 @@ package com.jyh.scm.service.code;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,8 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.constant.AppConst;
 import com.jyh.scm.dao.code.WarehouseMapper;
+import com.jyh.scm.entity.bas.User;
 import com.jyh.scm.entity.code.Unit;
 import com.jyh.scm.entity.code.Warehouse;
+import com.jyh.scm.event.UserRegisterEvent;
 import com.jyh.scm.util.TimeUtil;
 
 import tk.mybatis.mapper.entity.Condition;
@@ -46,6 +49,25 @@ public class WarehouseService {
         warehouse.setUpdatedBy(SessionManager.getAccount());
         warehouse.setUpdatedTime(TimeUtil.getTime());
         warehouseMapper.updateByPrimaryKeySelective(warehouse);
+    }
+
+    /**
+     * 监听用户注册事件<br>
+     * 创建默认仓库
+     * 
+     * @param userRegisterEvent
+     */
+    @EventListener
+    public void createDefaultWarehouse(UserRegisterEvent userRegisterEvent) {
+        User user = (User) userRegisterEvent.getSource();
+        Warehouse warehouse = new Warehouse();
+        warehouse.setAppid(user.getAppid());
+        warehouse.setCode(AppConst.DEFAULT_WAREHOUSE_CODE);
+        warehouse.setName(AppConst.DEFAULT_WAREHOUSE_NAME);
+        warehouse.setDefaulted("T");
+        warehouse.setCreatedBy(user.getAccount());
+        warehouse.setCreatedTime(TimeUtil.getTime());
+        warehouseMapper.insertSelective(warehouse);
     }
 
     /**

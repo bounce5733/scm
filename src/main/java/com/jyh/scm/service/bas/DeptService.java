@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,8 @@ import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.constant.AppConst;
 import com.jyh.scm.dao.bas.DeptMapper;
 import com.jyh.scm.entity.bas.Dept;
+import com.jyh.scm.entity.bas.User;
+import com.jyh.scm.event.UserRegisterEvent;
 import com.jyh.scm.util.TimeUtil;
 
 import tk.mybatis.mapper.entity.Condition;
@@ -63,6 +66,24 @@ public class DeptService {
             item.setSort(item.getSort() + 1);
             deptMapper.updateByPrimaryKeySelective(item);
         });
+    }
+
+    /**
+     * 监听用户注册事件<br>
+     * 创建总部
+     * 
+     * @param userRegisterEvent
+     */
+    @EventListener
+    public void createHeaderQuarter(UserRegisterEvent userRegisterEvent) {
+        User user = (User) userRegisterEvent.getSource();
+        Dept dept = new Dept();
+        dept.setAppid(user.getAppid());
+        dept.setName(AppConst.DEFAULT_DEPT_NAME);
+        dept.setDefaulted("T");
+        dept.setCreatedBy(user.getAccount());
+        dept.setCreatedTime(TimeUtil.getTime());
+        deptMapper.insertSelective(dept);
     }
 
     /**

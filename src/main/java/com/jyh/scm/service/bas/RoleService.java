@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +15,10 @@ import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.constant.AppConst;
 import com.jyh.scm.dao.bas.RoleMapper;
 import com.jyh.scm.entity.bas.Role;
+import com.jyh.scm.entity.bas.User;
 import com.jyh.scm.entity.console.Code;
+import com.jyh.scm.event.UserRegisterEvent;
+import com.jyh.scm.util.TimeUtil;
 
 import tk.mybatis.mapper.entity.Condition;
 
@@ -122,5 +126,47 @@ public class RoleService {
             }
         });
         return menus;
+    }
+
+    /**
+     * 监听用户注册事件<br>
+     * 创建默认角色并授权<br>
+     * 系统默认权限{menuName,[{menuKey,actionKey}]}
+     * 
+     * @param userRegisterEvent
+     */
+    @EventListener
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+    public void createDefaultRole(UserRegisterEvent userRegisterEvent) {
+        User user = (User) userRegisterEvent.getSource();
+        final Map<String, List<Map<String, String>>> superRoleMenu = new HashMap<String, List<Map<String, String>>>();
+        Condition c = new Condition(Role.class);
+        c.createCriteria().andEqualTo(AppConst.APPID_KEY, AppConst.SUPER_APPID);
+        List<Role> roles = roleMapper.selectByCondition(c);
+        roles.forEach(item -> {
+            if (item.getId() != AppConst.SUPER_ADMIN_ROLEID) {
+                Role role = new Role();
+                role.setAppid(user.getAppid());
+                role.setName(item.getName());
+                role.setCreatedBy(user.getAccount());
+                role.setCreatedTime(TimeUtil.getTime());
+                // 复制角色
+                roleMapper.insertSelective(role);
+                // 获取系统默认菜单暂存
+                superRoleMenu.put(role.getName(), roleMapper.roleMenus(item.getId()));
+            }
+        });
+
+        // 授权菜单
+        c = new Condition(Role.class);
+        c.createCriteria().andEqualTo(AppConst.APPID_KEY, user.getAppid());
+        roles = roleMapper.selectByCondition(c);
+        roles.forEach(role -> {
+            superRoleMenu.get(role.getName()).forEach(menu -> {
+                roleMapper.assignMenu(role.getId(), menu.get("menuKey"), menu.get("actionKey"));
+            });
+            // 授权角色
+            roleMapper.assignUser(role.getId(), user.getId());
+        });
     }
 }

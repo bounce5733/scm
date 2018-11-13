@@ -11,6 +11,9 @@
 	<!--设置系统日志目录 -->
 	<property name="APPDIR" value="scm" />
 
+	<appender name="MEMORY" class="com.jyh.scm.base.LogAppender">
+	</appender>
+
 	<!-- 日志记录器，日期滚动记录 -->
 	<appender name="FILEERROR"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -143,5 +146,6 @@
 
 		<!-- 生产环境将请stdout去掉 -->
 		<appender-ref ref="STDOUT" />
+		<appender-ref ref="MEMORY" />
 	</root>
 </configuration>

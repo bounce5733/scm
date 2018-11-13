@@ -36,7 +36,7 @@ public class ActionAspect {
             log.setCreatedBy(SessionManager.getAccount());
             log.setOptType(CacheManager.getActionMap().get(signature.getName()));
             log.setCreatedTime(TimeUtil.getTime());
-            CacheManager.LOG_CACHE_LIST.add(log);
+            CacheManager.OPT_LOG_CACHE_LIST.add(log);
         }
     }
 }

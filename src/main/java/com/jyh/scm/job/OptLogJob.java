@@ -23,9 +23,9 @@ public class OptLogJob {
 
     @Scheduled(cron = "0 0/2 * * * ?")
     public void handle() {
-        if (CacheManager.LOG_CACHE_LIST.size() > 0) {
-            mapper.insertList(CacheManager.LOG_CACHE_LIST);
-            CacheManager.LOG_CACHE_LIST.clear();
+        if (CacheManager.OPT_LOG_CACHE_LIST.size() > 0) {
+            mapper.insertList(CacheManager.OPT_LOG_CACHE_LIST);
+            CacheManager.OPT_LOG_CACHE_LIST.clear();
         }
     }
 }

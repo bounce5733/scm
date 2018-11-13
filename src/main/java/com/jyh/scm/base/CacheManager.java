@@ -50,7 +50,10 @@ public class CacheManager {
     private static final Logger log = LoggerFactory.getLogger(CacheManager.class);
 
     @Value("${custom.cache.base64ImgCache.expiredTime}")
-    private int expiredTime;
+    private int imgExpiredTime;
+
+    @Value("${custom.cache.logCache.expiredTime}")
+    private int logExpiredTime;
 
     @Autowired
     private CodeMapper codeMapper;
@@ -97,8 +100,11 @@ public class CacheManager {
     // base64图片缓存
     private static LoadingCache<String, String> base64ImgCache;
 
-    // 日志缓存列表
-    public static final List<OptLog> LOG_CACHE_LIST = Collections.synchronizedList(new ArrayList<OptLog>());
+    // 系统日志缓存，用户前端查看异常
+    private static LoadingCache<String, List<String>> sysLogCache;
+
+    // 系统操作日志缓存列表
+    public static final List<OptLog> OPT_LOG_CACHE_LIST = Collections.synchronizedList(new ArrayList<OptLog>());
 
     @PostConstruct
     public void init() {
@@ -140,11 +146,18 @@ public class CacheManager {
                 return new String();
             }
         });
-        base64ImgCache = CacheBuilder.newBuilder().expireAfterAccess(expiredTime, TimeUnit.MINUTES)
+        base64ImgCache = CacheBuilder.newBuilder().expireAfterAccess(imgExpiredTime, TimeUnit.MINUTES)
                 .build(new CacheLoader<String, String>() {
                     @Override
                     public String load(String key) throws Exception {
                         return new String();
+                    }
+                });
+        sysLogCache = CacheBuilder.newBuilder().expireAfterAccess(logExpiredTime, TimeUnit.MINUTES)
+                .build(new CacheLoader<String, List<String>>() {
+                    @Override
+                    public List<String> load(String key) throws Exception {
+                        return new ArrayList<String>();
                     }
                 });
     }
@@ -426,6 +439,13 @@ public class CacheManager {
             });
         }
         return appCascadePathCodeMap;
+    }
+
+    /**
+     * @return 获取系统日志
+     */
+    public static List<String> loadSysLog() {
+        return sysLogCache.asMap().get(SessionManager.getSessionid());
     }
 
     /**

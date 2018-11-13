@@ -75,7 +75,7 @@ public class LoginRest {
         log.setCreatedBy(user.getAccount());
         log.setOptType("登录");
         log.setCreatedTime(TimeUtil.getTime());
-        CacheManager.LOG_CACHE_LIST.add(log);
+        CacheManager.OPT_LOG_CACHE_LIST.add(log);
         return new ResponseEntity<Map<String, Object>>(rtnmsg, HttpStatus.OK);
     }
 
@@ -115,7 +115,7 @@ public class LoginRest {
         log.setCreatedBy(SessionManager.getAccount());
         log.setOptType("注销");
         log.setCreatedTime(TimeUtil.getTime());
-        CacheManager.LOG_CACHE_LIST.add(log);
+        CacheManager.OPT_LOG_CACHE_LIST.add(log);
         SessionManager.invaildSession();
         return new ResponseEntity<Object>(HttpStatus.OK);
     }

@@ -11,7 +11,9 @@ custom:
     expiredTime: 30 #分钟
   cache:
     base64ImgCache:
-     expiredTime: 30 #分钟
+      expiredTime: 30 #分钟
+    logCache:
+      expiredTime: 30 #分钟
 spring:
   profiles: dev
   datasource:

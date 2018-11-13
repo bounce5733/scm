@@ -3,6 +3,7 @@ package com.jyh.scm.service.code;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.constant.AppConst;
 import com.jyh.scm.dao.code.CustomerGradeMapper;
+import com.jyh.scm.entity.bas.User;
 import com.jyh.scm.entity.code.CustomerGrade;
+import com.jyh.scm.event.UserRegisterEvent;
 import com.jyh.scm.util.TimeUtil;
 
 import tk.mybatis.mapper.entity.Condition;
@@ -49,6 +52,25 @@ public class CustomerGradeService {
             customerGradeMapper.updateByPrimaryKeySelective(item);
         });
 
+    }
+
+    /**
+     * 监听用户注册事件<br>
+     * 创建默认客户级别
+     * 
+     * @param userRegisterEvent
+     */
+    @EventListener
+    public void createDefaultCustomerGrade(UserRegisterEvent userRegisterEvent) {
+        User user = (User) userRegisterEvent.getSource();
+        CustomerGrade customerGrade = new CustomerGrade();
+        customerGrade.setAppid(user.getAppid());
+        customerGrade.setName(AppConst.DEFAULT_CUSTOMER_GRADE_NAME);
+        customerGrade.setDefaulted("T");
+        customerGrade.setDiscount(100f);
+        customerGrade.setCreatedBy(user.getAccount());
+        customerGrade.setCreatedTime(TimeUtil.getTime());
+        customerGradeMapper.insertSelective(customerGrade);
     }
 
 }
