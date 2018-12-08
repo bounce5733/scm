@@ -47,6 +47,11 @@ public class UserRest {
     @Autowired
     private RoleService roleService;
 
+    @GetMapping("/load")
+    public ResponseEntity<List<User>> load() {
+        return new ResponseEntity<List<User>>(userMapper.selectAll(), HttpStatus.OK);
+    }
+
     @GetMapping
     public ResponseEntity<PageInfo<User>> queryByPage(@RequestParam("param") String param,
             @RequestParam("status") String status, @RequestParam("deptid") int deptid,

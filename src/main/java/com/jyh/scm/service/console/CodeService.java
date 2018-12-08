@@ -35,7 +35,7 @@ public class CodeService {
 
     public List<Code> loadCode() {
         Condition c = new Condition(Code.class);
-        c.createCriteria().andEqualTo(AppConst.APPID_KEY, SessionManager.getAppid());
+        c.createCriteria().andEqualTo(SessionManager.getAppid());
         List<Code> codes = codeMapper.selectByCondition(c);
         for (Code code : codes) {
             List<CodeItem> itemList = new LinkedList<CodeItem>();

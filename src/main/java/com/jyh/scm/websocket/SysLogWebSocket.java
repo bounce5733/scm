@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.jyh.scm.base.SysLogAppender;
+
 /**
  * 系统日志WebSocket
  * 
@@ -33,6 +35,18 @@ public class SysLogWebSocket {
     @OnOpen
     public void onOpen(Session session) {
         this.session = session;
+        SysLogAppender.openLog();
+        while (this.session.isOpen()) {
+            while (true) {
+                if (!SysLogAppender.getQueue().isEmpty()) {
+                    try {
+                        this.session.getBasicRemote().sendText(SysLogAppender.getQueue().poll());
+                    } catch (IOException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+            }
+        }
         log.info("打开SysLogWebSocket...");
     }
 
@@ -41,6 +55,7 @@ public class SysLogWebSocket {
      */
     @OnClose
     public void onClose() {
+        SysLogAppender.closeLog();
         log.info("关闭SysLogWebSocket...");
     }
 
@@ -52,15 +67,4 @@ public class SysLogWebSocket {
         log.error("SysLogWebSocket发生异常", error);
     }
 
-    public void sendMessage(String message) {
-        try {
-            this.session.getBasicRemote().sendText(message);
-        } catch (IOException e) {
-            log.error("SysLogWebSocket发送消息异常!", e);
-        }
-    }
-
-    public boolean isOpen() {
-        return this.session.isOpen();
-    }
 }

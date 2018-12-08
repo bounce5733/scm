@@ -11,7 +11,7 @@
 	<!--设置系统日志目录 -->
 	<property name="APPDIR" value="scm" />
 
-	<appender name="MEMORY" class="com.jyh.scm.base.LogAppender">
+	<appender name="MEMORY" class="com.jyh.scm.base.SysLogAppender">
 	</appender>
 
 	<!-- 日志记录器，日期滚动记录 -->
