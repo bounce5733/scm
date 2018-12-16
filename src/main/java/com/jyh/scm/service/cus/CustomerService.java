@@ -1,19 +1,21 @@
 package com.jyh.scm.service.cus;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jyh.scm.base.SessionManager;
-import com.jyh.scm.dao.cus.CusAccountMapper;
 import com.jyh.scm.dao.cus.CusCompanyMapper;
 import com.jyh.scm.dao.cus.CusFinancialMapper;
 import com.jyh.scm.dao.cus.CusPersonalMapper;
-import com.jyh.scm.entity.cus.CusAccount;
 import com.jyh.scm.entity.cus.CusCompany;
 import com.jyh.scm.entity.cus.CusFinancial;
 import com.jyh.scm.entity.cus.CusPersonal;
+import com.jyh.scm.service.sys.LoginService;
 import com.jyh.scm.util.TimeUtil;
 
 /**
@@ -32,13 +34,13 @@ public class CustomerService {
     private CusPersonalMapper cusPersonalMapper;
 
     @Autowired
-    private CusAccountMapper cusAccountMapper;
-
-    @Autowired
     private CusFinancialMapper cusFinancialMapper;
 
+    @Autowired
+    private LoginService loginService;
+
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
-    public void addCustomer(CusCompany company, CusPersonal personal, CusAccount account, CusFinancial financial) {
+    public void addCustomer(CusCompany company, CusPersonal personal, HashMap<?, ?> account, CusFinancial financial) {
         company.setAppid(SessionManager.getAppid());
         company.setCreatedBy(SessionManager.getAccount());
         company.setCreatedTime(TimeUtil.getTime());
@@ -49,12 +51,12 @@ public class CustomerService {
         personal.setCreatedBy(SessionManager.getAccount());
         personal.setCreatedTime(TimeUtil.getTime());
         cusPersonalMapper.insert(personal);
-        if (account.getAccount() != null) {
-            account.setCusid(company.getId());
-            account.setAppid(SessionManager.getAppid());
-            account.setCreatedBy(SessionManager.getAccount());
-            account.setCreatedTime(TimeUtil.getTime());
-            cusAccountMapper.insert(account);
+        if (account.get("account") != null) {
+            Map<String, String> registerInfo = new HashMap<String, String>();
+            registerInfo.put("companyName", company.getName());
+            registerInfo.put("account", String.valueOf(account.get("account")));
+            registerInfo.put("password", String.valueOf(account.get("pwd")));
+            loginService.register(registerInfo);
         }
         if (financial != null) {
             financial.setCusid(company.getId());
@@ -63,5 +65,6 @@ public class CustomerService {
             financial.setCreatedTime(TimeUtil.getTime());
             cusFinancialMapper.insert(financial);
         }
+
     }
 }

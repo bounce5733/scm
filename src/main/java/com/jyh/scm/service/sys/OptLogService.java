@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.ISelect;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.page.PageMethod;
 import com.jyh.scm.base.SessionManager;
 import com.jyh.scm.constant.AppConst;
 import com.jyh.scm.dao.sys.OptLogMapper;
@@ -47,7 +47,7 @@ public class OptLogService {
     public PageInfo<OptLog> queryByPage(String optType, boolean isme, String startTime, String endTime,
             String orderField, String order, int pageNum, int pageSize) {
 
-        return PageHelper.startPage(pageNum, pageSize, true).doSelectPageInfo(new ISelect() {
+        return PageMethod.startPage(pageNum, pageSize, true).doSelectPageInfo(new ISelect() {
 
             @Override
             public void doSelect() {

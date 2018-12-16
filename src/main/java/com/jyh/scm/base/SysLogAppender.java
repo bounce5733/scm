@@ -21,7 +21,7 @@ public class SysLogAppender extends AppenderBase<ILoggingEvent> {
     protected void append(ILoggingEvent eventObject) {
 
         if (logFlag && eventObject != null && eventObject.getMessage() != null) {
-            logQueue.add(eventObject.getMessage()+"\n");
+            logQueue.add(eventObject.getMessage() + "\n");
         }
     }
 

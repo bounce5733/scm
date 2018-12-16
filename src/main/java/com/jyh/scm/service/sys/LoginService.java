@@ -2,6 +2,7 @@ package com.jyh.scm.service.sys;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -73,7 +74,8 @@ public class LoginService {
 
         // 保存联系人
         param.setAppid(companyid);
-        param.setName(registerInfo.get("name"));
+        param.setName(
+                StringUtils.isEmpty(registerInfo.get("name")) ? registerInfo.get("account") : registerInfo.get("name"));
         param.setPwd(CodeUtil.md5Encode(registerInfo.get("password")));
         param.setMobile(registerInfo.get("mobile"));
         param.setIsCompanyCreater("T");
